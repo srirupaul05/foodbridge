@@ -1,0 +1,200 @@
+/* ============================================
+   FOODBRIDGE — Recipient Page Styles
+============================================ */
+
+/* ---- Filters Bar ---- */
+.filters {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.filters select {
+  width: auto;
+  min-width: 200px;
+  margin-bottom: 0;
+}
+
+.filters .btn-secondary {
+  padding: 10px 22px;
+  white-space: nowrap;
+}
+
+/* ---- Listings Grid ---- */
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* ---- Food Listing Card ---- */
+.listing-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  border: 2px solid transparent;
+  transition: all 0.25s;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.listing-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--green), var(--orange));
+}
+
+.listing-card:hover {
+  border-color: var(--green-pale);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 36px rgba(29,45,31,0.15);
+}
+
+/* ---- Card Header ---- */
+.listing-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.listing-card h3 {
+  font-family: 'Fraunces', serif;
+  font-size: 1.2rem;
+  color: var(--dark);
+  flex: 1;
+}
+
+/* ---- Card Details ---- */
+.listing-detail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--gray);
+}
+
+.listing-detail span:first-child {
+  font-size: 1.1rem;
+}
+
+/* ---- Quantity Badge ---- */
+.quantity-badge {
+  background: var(--green-pale);
+  color: var(--green);
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---- Time Left ---- */
+.time-left {
+  font-size: 0.82rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 50px;
+}
+
+.time-urgent {
+  background: #ffe5e5;
+  color: #e63946;
+}
+
+.time-ok {
+  background: var(--green-pale);
+  color: var(--green);
+}
+
+/* ---- Donor Info ---- */
+.donor-info {
+  font-size: 0.85rem;
+  color: var(--gray);
+  padding-top: 8px;
+  border-top: 1px solid #f0f5f1;
+}
+
+/* ---- Claim Button ---- */
+.btn-claim {
+  background: var(--green);
+  color: var(--white);
+  border: none;
+  padding: 11px 20px;
+  border-radius: 50px;
+  font-size: 0.95rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 6px;
+  width: 100%;
+}
+
+.btn-claim:hover {
+  background: var(--green-light);
+  transform: translateY(-2px);
+}
+
+.btn-claim:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-claimed {
+  background: #e2e3e5 !important;
+  color: #6c757d !important;
+  cursor: not-allowed !important;
+}
+
+/* ---- No Listings ---- */
+.no-listings {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--gray);
+}
+
+.no-listings p {
+  font-size: 1.1rem;
+  margin-top: 12px;
+}
+
+/* ---- Claimed Banner ---- */
+.claimed-banner {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 0.88rem;
+  color: #856404;
+  text-align: center;
+  margin-top: 4px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 600px) {
+  .listings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters select {
+    width: 100%;
+  }
+}

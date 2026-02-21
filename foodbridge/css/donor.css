@@ -1,0 +1,151 @@
+/* ============================================
+   FOODBRIDGE — Donor Page Styles
+============================================ */
+
+/* ---- Layout ---- */
+.donor-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* ---- Donor Form Card ---- */
+#donor-form-card input,
+#donor-form-card select,
+#donor-form-card textarea {
+  margin-bottom: 12px;
+}
+
+#donor-form-card label {
+  font-size: 0.88rem;
+  color: var(--gray);
+  margin-bottom: 4px;
+  margin-top: 4px;
+}
+
+/* ---- Donation Item Card ---- */
+.donation-item {
+  background: #f8fdf9;
+  border: 2px solid var(--green-pale);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  transition: transform 0.2s;
+  position: relative;
+}
+
+.donation-item:hover {
+  transform: translateY(-3px);
+  border-color: var(--green-light);
+}
+
+.donation-item h4 {
+  font-size: 1.05rem;
+  color: var(--dark);
+  margin-bottom: 6px;
+  font-family: 'Fraunces', serif;
+}
+
+.donation-item p {
+  font-size: 0.88rem;
+  color: var(--gray);
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+
+/* ---- Status Badge ---- */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-top: 8px;
+}
+
+.status-available {
+  background: var(--green-pale);
+  color: var(--green);
+}
+
+.status-claimed {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-pickedup {
+  background: #e2e3e5;
+  color: #495057;
+}
+
+/* ---- Category Badge ---- */
+.category-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  background: var(--orange-light);
+  color: var(--dark);
+  margin-bottom: 8px;
+}
+
+/* ---- Expiry Warning ---- */
+.expiry-soon {
+  color: #e63946;
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+.expiry-ok {
+  color: var(--green);
+  font-size: 0.82rem;
+}
+
+/* ---- Delete Button ---- */
+.btn-delete {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #ccc;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  width: auto;
+  margin: 0;
+  padding: 4px;
+}
+
+.btn-delete:hover {
+  color: #e63946;
+}
+
+/* ---- Login Prompt ---- */
+.login-prompt {
+  text-align: center;
+  padding: 50px 20px;
+  color: var(--gray);
+}
+
+.login-prompt h3 {
+  font-size: 1.4rem;
+  margin-bottom: 12px;
+  color: var(--dark);
+}
+
+.login-prompt .btn-primary {
+  width: auto;
+  margin: 16px auto 0;
+  display: inline-block;
+  padding: 12px 32px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .donor-layout {
+    grid-template-columns: 1fr;
+  }
+}

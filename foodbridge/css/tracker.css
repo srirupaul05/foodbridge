@@ -1,0 +1,223 @@
+/* ============================================
+   FOODBRIDGE — Expiry Tracker Page Styles
+============================================ */
+
+/* ---- Layout ---- */
+.tracker-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* ---- Tracker Item ---- */
+.tracker-item {
+  background: #f8fdf9;
+  border: 2px solid var(--green-pale);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.tracker-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--green-light);
+}
+
+/* ---- Expiry Status Colors ---- */
+.tracker-item.expired {
+  border-color: #e63946;
+  background: #fff5f5;
+}
+
+.tracker-item.expiring-soon {
+  border-color: #f4a261;
+  background: #fff8f0;
+}
+
+.tracker-item.expiring-today {
+  border-color: #e63946;
+  background: #fff0f0;
+  animation: pulse 1.5s infinite;
+}
+
+.tracker-item.fresh {
+  border-color: var(--green-pale);
+  background: #f8fdf9;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(230,57,70,0.2); }
+  50%       { box-shadow: 0 0 0 8px rgba(230,57,70,0); }
+}
+
+/* ---- Item Icon ---- */
+.tracker-item-icon {
+  font-size: 2rem;
+  min-width: 44px;
+  text-align: center;
+}
+
+/* ---- Item Info ---- */
+.tracker-item-info {
+  flex: 1;
+}
+
+.tracker-item-info h4 {
+  font-size: 1rem;
+  color: var(--dark);
+  margin-bottom: 4px;
+  font-family: 'Fraunces', serif;
+}
+
+.tracker-item-info p {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin-bottom: 2px;
+}
+
+/* ---- Days Left Badge ---- */
+.days-left {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 50px;
+  white-space: nowrap;
+}
+
+.days-expired {
+  background: #ffe5e5;
+  color: #e63946;
+}
+
+.days-today {
+  background: #ffe5e5;
+  color: #e63946;
+}
+
+.days-soon {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.days-fresh {
+  background: var(--green-pale);
+  color: var(--green);
+}
+
+/* ---- Action Buttons ---- */
+.tracker-item-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.btn-donate-now {
+  background: var(--orange);
+  color: var(--white);
+  border: none;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-donate-now:hover {
+  background: #e06d4a;
+  transform: translateY(-1px);
+}
+
+.btn-remove-item {
+  background: transparent;
+  border: none;
+  color: #ccc;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 4px;
+}
+
+.btn-remove-item:hover {
+  color: #e63946;
+}
+
+/* ---- Summary Bar ---- */
+.tracker-summary {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.summary-pill {
+  padding: 6px 16px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.pill-all {
+  background: var(--dark);
+  color: var(--white);
+}
+
+.pill-urgent {
+  background: #ffe5e5;
+  color: #e63946;
+  border-color: #e63946;
+}
+
+.pill-fresh {
+  background: var(--green-pale);
+  color: var(--green);
+  border-color: var(--green);
+}
+
+/* ---- Tip Box ---- */
+.tip-box {
+  background: linear-gradient(135deg, var(--green-pale), #b7e4c7);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-top: 16px;
+  border-left: 4px solid var(--green);
+}
+
+.tip-box p {
+  font-size: 0.9rem;
+  color: var(--dark);
+  line-height: 1.6;
+}
+
+.tip-box strong {
+  color: var(--green);
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .tracker-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .tracker-item {
+    flex-wrap: wrap;
+  }
+
+  .tracker-item-actions {
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

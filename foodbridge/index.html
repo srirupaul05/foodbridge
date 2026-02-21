@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FoodBridge — Every Bite Counts</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+  <!-- CSS Files -->
+  <link rel="stylesheet" href="css/style.css"/>
+  <link rel="stylesheet" href="css/navbar.css"/>
+  <link rel="stylesheet" href="css/home.css"/>
+  <link rel="stylesheet" href="css/auth.css"/>
+  <link rel="stylesheet" href="css/donor.css"/>
+  <link rel="stylesheet" href="css/recipient.css"/>
+  <link rel="stylesheet" href="css/tracker.css"/>
+  <link rel="stylesheet" href="css/impact.css"/>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <div class="nav-logo">🌱 FoodBridge</div>
+    <div class="nav-links" id="navLinks">
+      <a href="#" onclick="showPage('home')">Home</a>
+      <a href="#" onclick="showPage('recipient')">Find Food</a>
+      <a href="#" onclick="showPage('donor')">Donate Food</a>
+      <a href="#" onclick="showPage('tracker')">Expiry Tracker</a>
+      <a href="#" onclick="showPage('impact')">Impact</a>
+    </div>
+    <div class="nav-auth" id="navAuth">
+      <button onclick="showPage('auth')" class="btn-login">Login</button>
+      <button onclick="showPage('auth')" class="btn-signup">Sign Up</button>
+    </div>
+    <div class="nav-user hidden" id="navUser">
+      <span id="userNameDisplay"></span>
+      <button onclick="logoutUser()" class="btn-logout">Logout</button>
+    </div>
+  </nav>
+
+  <!-- ===== HOME PAGE ===== -->
+  <div id="page-home" class="page active">
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-text">
+        <h1>Every Bite <span>Counts</span></h1>
+        <p>Connecting surplus food with people who need it most. Reduce waste. Feed communities. Build impact.</p>
+        <div class="hero-btns">
+          <button onclick="showPage('donor')" class="btn-primary">Donate Food</button>
+          <button onclick="showPage('recipient')" class="btn-secondary">Find Food</button>
+        </div>
+      </div>
+      <div class="hero-image">🌍</div>
+    </section>
+
+    <!-- Stats Bar -->
+    <section class="stats-bar">
+      <div class="stat">
+        <h2 id="stat-meals">0</h2>
+        <p>Meals Provided</p>
+      </div>
+      <div class="stat">
+        <h2 id="stat-kg">0</h2>
+        <p>KG Food Rescued</p>
+      </div>
+      <div class="stat">
+        <h2 id="stat-co2">0</h2>
+        <p>KG CO₂ Avoided</p>
+      </div>
+      <div class="stat">
+        <h2 id="stat-donors">0</h2>
+        <p>Active Donors</p>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works">
+      <h2>How FoodBridge Works</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon">📦</div>
+          <h3>Donor Posts Food</h3>
+          <p>Restaurants, stores, or individuals post surplus food with pickup details.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">🔔</div>
+          <h3>Recipients Get Notified</h3>
+          <p>Nearby food banks and individuals in need see available food instantly.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">🤝</div>
+          <h3>Food Gets Claimed</h3>
+          <p>Recipients claim food and arrange pickup before it goes to waste.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon">🌍</div>
+          <h3>Impact Is Tracked</h3>
+          <p>Every donation is tracked and converted into real impact numbers.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ===== AUTH PAGE ===== -->
+  <div id="page-auth" class="page">
+    <div class="auth-container">
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')">Login</button>
+        <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="login-form" class="auth-form">
+        <h2>Welcome Back 👋</h2>
+        <input type="email" id="login-email" placeholder="Email address"/>
+        <input type="password" id="login-password" placeholder="Password"/>
+        <button onclick="loginUser()" class="btn-primary">Login</button>
+        <p id="login-error" class="error-msg"></p>
+      </div>
+
+      <!-- Signup Form -->
+      <div id="signup-form" class="auth-form hidden">
+        <h2>Join FoodBridge 🌱</h2>
+        <input type="text" id="signup-name" placeholder="Full Name"/>
+        <input type="email" id="signup-email" placeholder="Email address"/>
+        <input type="password" id="signup-password" placeholder="Password (min 6 chars)"/>
+        <select id="signup-role">
+          <option value="">Select your role...</option>
+          <option value="donor">🍱 Donor (Restaurant / Individual)</option>
+          <option value="recipient">🙏 Recipient (Food Bank / Individual in need)</option>
+          <option value="volunteer">🚗 Volunteer (Pickup & Delivery)</option>
+        </select>
+        <button onclick="signupUser()" class="btn-primary">Create Account</button>
+        <p id="signup-error" class="error-msg"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== DONOR PAGE ===== -->
+  <div id="page-donor" class="page">
+    <div class="page-container">
+      <h1 class="page-title">🍱 Donate Food</h1>
+      <p class="page-subtitle">Post your surplus food and help someone today</p>
+
+      <div class="donor-layout">
+        <!-- Post Food Form -->
+        <div class="card" id="donor-form-card">
+          <h3>Post New Food Listing</h3>
+          <input type="text" id="food-name" placeholder="Food name (e.g. Rice & Dal)"/>
+          <select id="food-category">
+            <option value="">Select category...</option>
+            <option value="veg">🥦 Vegetarian</option>
+            <option value="nonveg">🍗 Non-Vegetarian</option>
+            <option value="bakery">🍞 Bakery</option>
+            <option value="dairy">🥛 Dairy</option>
+            <option value="fruits">🍎 Fruits & Vegetables</option>
+            <option value="cooked">🍲 Cooked Meal</option>
+            <option value="packaged">📦 Packaged Food</option>
+          </select>
+          <input type="number" id="food-quantity" placeholder="Quantity (in kg or servings)"/>
+          <input type="text" id="food-unit" placeholder="Unit (kg / servings / packets)"/>
+          <input type="datetime-local" id="food-expiry"/>
+          <label>Pickup Window</label>
+          <input type="datetime-local" id="pickup-start"/>
+          <input type="datetime-local" id="pickup-end"/>
+          <input type="text" id="food-location" placeholder="Pickup location / address"/>
+          <textarea id="food-notes" placeholder="Any additional notes..."></textarea>
+          <button onclick="postFood()" class="btn-primary">Post Food Listing ✅</button>
+          <p id="donor-msg" class="success-msg"></p>
+        </div>
+
+        <!-- My Donations -->
+        <div class="card">
+          <h3>My Donations</h3>
+          <div id="my-donations-list">
+            <p class="empty-msg">No donations yet. Post your first one! 👆</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== RECIPIENT PAGE ===== -->
+  <div id="page-recipient" class="page">
+    <div class="page-container">
+      <h1 class="page-title">🍽️ Find Food Near You</h1>
+      <p class="page-subtitle">Browse available food listings and claim what you need</p>
+
+      <!-- Filters -->
+      <div class="filters">
+        <select id="filter-category" onchange="filterListings()">
+          <option value="">All Categories</option>
+          <option value="veg">🥦 Vegetarian</option>
+          <option value="nonveg">🍗 Non-Vegetarian</option>
+          <option value="bakery">🍞 Bakery</option>
+          <option value="dairy">🥛 Dairy</option>
+          <option value="fruits">🍎 Fruits & Vegetables</option>
+          <option value="cooked">🍲 Cooked Meal</option>
+          <option value="packaged">📦 Packaged Food</option>
+        </select>
+        <button onclick="loadListings()" class="btn-secondary">🔄 Refresh</button>
+      </div>
+
+      <!-- Food Listings Grid -->
+      <div id="food-listings-grid" class="listings-grid">
+        <p class="empty-msg">Loading available food...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TRACKER PAGE ===== -->
+  <div id="page-tracker" class="page">
+    <div class="page-container">
+      <h1 class="page-title">⏰ Expiry Tracker</h1>
+      <p class="page-subtitle">Track your groceries and get notified before they expire</p>
+
+      <div class="tracker-layout">
+        <!-- Add Item -->
+        <div class="card">
+          <h3>Add Grocery Item</h3>
+          <input type="text" id="item-name" placeholder="Item name (e.g. Milk)"/>
+          <input type="number" id="item-quantity" placeholder="Quantity"/>
+          <input type="text" id="item-unit" placeholder="Unit (litres / kg / packets)"/>
+          <input type="date" id="item-expiry"/>
+          <button onclick="addTrackerItem()" class="btn-primary">Add Item ➕</button>
+          <p id="tracker-msg" class="success-msg"></p>
+        </div>
+
+        <!-- Tracked Items -->
+        <div class="card">
+          <h3>Your Grocery List</h3>
+          <div id="tracker-items-list">
+            <p class="empty-msg">No items added yet.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== IMPACT PAGE ===== -->
+  <div id="page-impact" class="page">
+    <div class="page-container">
+      <h1 class="page-title">🌍 Your Impact</h1>
+      <p class="page-subtitle">See the difference you're making in the world</p>
+
+      <!-- Personal Impact -->
+      <div class="impact-grid">
+        <div class="impact-card green">
+          <div class="impact-icon">🍽️</div>
+          <h2 id="my-meals">0</h2>
+          <p>Meals Provided</p>
+        </div>
+        <div class="impact-card blue">
+          <div class="impact-icon">♻️</div>
+          <h2 id="my-kg">0</h2>
+          <p>KG Food Rescued</p>
+        </div>
+        <div class="impact-card orange">
+          <div class="impact-icon">🌿</div>
+          <h2 id="my-co2">0</h2>
+          <p>KG CO₂ Avoided</p>
+        </div>
+        <div class="impact-card teal">
+          <div class="impact-icon">💧</div>
+          <h2 id="my-water">0</h2>
+          <p>Litres Water Saved</p>
+        </div>
+      </div>
+
+      <!-- Badges -->
+      <div class="card badges-card">
+        <h3>🏆 Your Badges</h3>
+        <div id="badges-container" class="badges-grid"></div>
+      </div>
+
+      <!-- Leaderboard -->
+      <div class="card">
+        <h3>🏅 Community Leaderboard</h3>
+        <div id="leaderboard-list" class="leaderboard"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JS Files — order matters! -->
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/donor.js"></script>
+  <script type="module" src="js/recipient.js"></script>
+  <script type="module" src="js/tracker.js"></script>
+  <script type="module" src="js/impact.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+/* ============================================
+   FOODBRIDGE — Navbar Styles
+============================================ */
+
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 65px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+}
+
+/* ---- Logo ---- */
+.nav-logo {
+  font-family: 'Fraunces', serif;
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: var(--white);
+  cursor: pointer;
+  letter-spacing: -0.5px;
+}
+
+.nav-logo span {
+  color: var(--orange);
+}
+
+/* ---- Nav Links ---- */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-links a {
+  color: #a8c5b0;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.nav-links a:hover {
+  color: var(--white);
+  background: rgba(255,255,255,0.08);
+}
+
+.nav-links a.active-link {
+  color: var(--white);
+  background: var(--green);
+}
+
+/* ---- Auth Buttons ---- */
+.nav-auth {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-login {
+  background: transparent;
+  color: var(--white);
+  border: 2px solid rgba(255,255,255,0.3);
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-login:hover {
+  border-color: var(--white);
+  background: rgba(255,255,255,0.08);
+}
+
+.btn-signup {
+  background: var(--orange);
+  color: var(--white);
+  border: none;
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-signup:hover {
+  background: #e06d4a;
+  transform: translateY(-1px);
+}
+
+/* ---- Logged In User ---- */
+.nav-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.nav-user span {
+  color: var(--green-pale);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.btn-logout {
+  background: transparent;
+  color: #a8c5b0;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 7px 18px;
+  border-radius: 50px;
+  font-size: 0.88rem;
+  font-family: 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-logout:hover {
+  color: var(--white);
+  border-color: var(--white);
+}
+
+/* ---- Responsive Mobile ---- */
+@media (max-width: 768px) {
+  nav {
+    padding: 0 16px;
+    flex-wrap: wrap;
+    height: auto;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    gap: 10px;
+  }
+
+  .nav-links {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    gap: 4px;
+  }
+
+  .nav-links a {
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    white-space: nowrap;
+  }
+
+  .page {
+    padding-top: 120px;
+  }
+}
