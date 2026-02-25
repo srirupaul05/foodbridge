@@ -198,3 +198,59 @@
     width: 100%;
   }
 }
+
+/* ---- Listing Photo ---- */
+.listing-photo-container {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  border-radius: 14px 14px 0 0;
+  margin: -24px -24px 16px -24px;
+  width: calc(100% + 48px);
+}
+
+.listing-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.live-photo-badge {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-weight: 600;
+}
+
+/* ---- No Photo Placeholder ---- */
+.listing-no-photo {
+  text-align: center;
+  padding: 20px;
+  background: #f8fdf9;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  color: var(--gray);
+}
+
+.listing-no-photo span {
+  font-size: 2.5rem;
+}
+
+.listing-no-photo p {
+  font-size: 0.82rem;
+  margin-top: 4px;
+}
+
+/* ---- Card Body ---- */
+.listing-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

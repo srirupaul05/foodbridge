@@ -149,3 +149,143 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================
+   CAMERA SECTION
+============================================ */
+
+.camera-section {
+  background: #f8fdf9;
+  border: 2px dashed var(--green-light);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 14px;
+}
+
+.camera-section h4 {
+  font-size: 1rem;
+  color: var(--green);
+  margin-bottom: 4px;
+  font-family: 'Fraunces', serif;
+}
+
+.camera-hint {
+  font-size: 0.82rem;
+  color: var(--gray);
+  margin-bottom: 14px;
+}
+
+/* ---- Camera Feed ---- */
+.camera-container {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  display: none;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.camera-container.active {
+  display: block;
+}
+
+#camera-feed {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  display: block;
+}
+
+/* ---- Camera Controls ---- */
+.camera-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.btn-camera {
+  background: var(--dark);
+  color: var(--white);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-camera:hover {
+  background: var(--green);
+}
+
+.btn-capture {
+  background: #e63946;
+  color: var(--white);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  animation: pulse-red 1.5s infinite;
+}
+
+@keyframes pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(230,57,70,0.3); }
+  50%       { box-shadow: 0 0 0 8px rgba(230,57,70,0); }
+}
+
+.btn-capture:hover {
+  background: #c1121f;
+}
+
+.btn-retake {
+  background: var(--gray);
+  color: var(--white);
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-retake:hover {
+  background: var(--dark);
+}
+
+/* ---- Photo Preview ---- */
+#photo-preview-container {
+  text-align: center;
+}
+
+#photo-preview {
+  width: 100%;
+  max-height: 280px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 3px solid var(--green);
+  margin-bottom: 8px;
+}
+
+.photo-ok {
+  color: var(--green);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* ---- No Camera Message ---- */
+.no-camera-msg {
+  text-align: center;
+  padding: 20px;
+  color: var(--gray);
+  font-size: 0.9rem;
+}

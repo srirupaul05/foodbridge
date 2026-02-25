@@ -9,7 +9,6 @@ import {
   query,
   where,
   orderBy,
-  getDocs,
   doc,
   updateDoc,
   addDoc,
@@ -29,10 +28,8 @@ window.loadListings = function() {
 
   gridEl.innerHTML = '<p class="empty-msg">⏳ Loading available food...</p>';
 
-  // Real-time listener for available listings
   const q = query(
     collection(db, 'foodListings'),
-    where('status', '==', 'available'),
     orderBy('createdAt', 'desc')
   );
 
@@ -56,11 +53,16 @@ window.loadListings = function() {
     });
 
     renderListings(allListings);
+
+    // Update map with new listings
+    if (typeof updateMapListings === 'function') {
+      updateMapListings(allListings);
+    }
   });
 };
 
 // ============================================
-//  RENDER LISTINGS — Build listing cards
+//  RENDER LISTINGS
 // ============================================
 function renderListings(listings) {
   const gridEl = document.getElementById('food-listings-grid');
@@ -82,7 +84,7 @@ function renderListings(listings) {
 }
 
 // ============================================
-//  CREATE LISTING CARD — Build HTML card
+//  CREATE LISTING CARD — Now with photo!
 // ============================================
 function createListingCard(data) {
   const card = document.createElement('div');
@@ -111,72 +113,113 @@ function createListingCard(data) {
   // Category emoji
   const categoryEmojis = {
     veg: '🥦', nonveg: '🍗', bakery: '🍞',
-    dairy: '🥛', fruits: '🍎', cooked: '🍲', packaged: '📦'
+    dairy: '🥛', fruits: '🍎', cooked: '🍲',
+    packaged: '📦'
   };
   const emoji = categoryEmojis[data.category] || '🍱';
 
   // Pickup window
   const pickupText = data.pickupStart
-    ? `${formatDateTime(data.pickupStart.toDate())} — ${formatDateTime(data.pickupEnd?.toDate())}`
+    ? `${formatDateTime(data.pickupStart.toDate())} — 
+       ${formatDateTime(data.pickupEnd?.toDate())}`
     : 'Flexible pickup time';
 
+  // Photo section — show if available
+  const photoHTML = data.photo
+    ? `<div class="listing-photo-container">
+        <img
+          src="${data.photo}"
+          alt="Food photo"
+          class="listing-photo"
+        />
+        <span class="live-photo-badge">📸 Live Photo</span>
+       </div>`
+    : `<div class="listing-no-photo">
+        <span>🍱</span>
+        <p>No photo</p>
+       </div>`;
+
   card.innerHTML = `
-    <div class="listing-card-header">
-      <h3>${data.foodName}</h3>
-      <span class="quantity-badge">
-        ${data.quantity} ${data.unit}
+    ${photoHTML}
+
+    <div class="listing-card-body">
+      <div class="listing-card-header">
+        <h3>${data.foodName}</h3>
+        <span class="quantity-badge">
+          ${data.quantity} ${data.unit}
+        </span>
+      </div>
+
+      <span class="category-badge">
+        ${emoji} ${data.category}
       </span>
+
+      ${timeBadge}
+
+      <div class="listing-detail">
+        <span>📍</span>
+        <span>${data.location}</span>
+      </div>
+
+      <div class="listing-detail">
+        <span>🕐</span>
+        <span>${pickupText}</span>
+      </div>
+
+      ${data.notes ? `
+      <div class="listing-detail">
+        <span>📝</span>
+        <span>${data.notes}</span>
+      </div>` : ''}
+
+      <div class="donor-info">
+        👤 Posted by ${data.donorName || 'Anonymous'}
+      </div>
+
+      ${data.status === 'available' ? `
+      <button
+        class="btn-claim"
+        id="claim-btn-${data.id}"
+        onclick="claimFood('${data.id}', '${data.donorId}')">
+        🤝 Claim This Food
+      </button>` : ''}
+
+      ${data.status === 'claimed' &&
+        data.claimedBy === window.currentUser?.uid ? `
+      <div class="claimed-banner">
+        🎉 You claimed this food! Chat to coordinate pickup.
+      </div>
+      <button
+        class="btn-open-chat"
+        onclick="openChat(
+          '${data.id}',
+          '${data.foodName}',
+          '${data.donorName}')">
+        💬 Chat with Donor
+      </button>` : ''}
+
+      ${data.status === 'claimed' &&
+        data.claimedBy !== window.currentUser?.uid &&
+        data.status !== 'available' ? `
+      <button class="btn-claim btn-claimed" disabled>
+        Already Claimed
+      </button>` : ''}
     </div>
-
-    <span class="category-badge">
-      ${emoji} ${data.category}
-    </span>
-
-    ${timeBadge}
-
-    <div class="listing-detail">
-      <span>📍</span>
-      <span>${data.location}</span>
-    </div>
-
-    <div class="listing-detail">
-      <span>🕐</span>
-      <span>${pickupText}</span>
-    </div>
-
-    ${data.notes ? `
-    <div class="listing-detail">
-      <span>📝</span>
-      <span>${data.notes}</span>
-    </div>` : ''}
-
-    <div class="donor-info">
-      👤 Posted by ${data.donorName || 'Anonymous'}
-    </div>
-
-    <button
-      class="btn-claim"
-      id="claim-btn-${data.id}"
-      onclick="claimFood('${data.id}', '${data.donorId}')">
-      🤝 Claim This Food
-    </button>
   `;
 
   return card;
 }
 
 // ============================================
-//  CLAIM FOOD — Reserve a listing
+//  CLAIM FOOD
 // ============================================
 window.claimFood = async function(listingId, donorId) {
-  // Must be logged in
   if (!window.currentUser) {
     alert('Please login or sign up to claim food!');
     showPage('auth');
     return;
   }
 
-  // Donors cannot claim their own food
   if (window.currentUser.uid === donorId) {
     alert('You cannot claim your own food listing!');
     return;
@@ -189,7 +232,6 @@ window.claimFood = async function(listingId, donorId) {
   }
 
   try {
-    // Update listing status to claimed
     await updateDoc(doc(db, 'foodListings', listingId), {
       status:      'claimed',
       claimedBy:   window.currentUser.uid,
@@ -197,7 +239,6 @@ window.claimFood = async function(listingId, donorId) {
       claimedAt:   serverTimestamp()
     });
 
-    // Add to claims collection
     await addDoc(collection(db, 'claims'), {
       listingId:     listingId,
       recipientId:   window.currentUser.uid,
@@ -208,12 +249,11 @@ window.claimFood = async function(listingId, donorId) {
     });
 
     if (btn) {
-      btn.textContent   = '✅ Claimed!';
-      btn.className     = 'btn-claim btn-claimed';
-      btn.disabled      = true;
+      btn.textContent = '✅ Claimed!';
+      btn.className   = 'btn-claim btn-claimed';
+      btn.disabled    = true;
     }
 
-    // Show success message
     showClaimSuccess(listingId);
 
   } catch (error) {
@@ -227,7 +267,7 @@ window.claimFood = async function(listingId, donorId) {
 };
 
 // ============================================
-//  FILTER LISTINGS — by category
+//  FILTER LISTINGS
 // ============================================
 window.filterListings = function() {
   const category = document.getElementById('filter-category').value;
@@ -243,7 +283,7 @@ window.filterListings = function() {
 };
 
 // ============================================
-//  SHOW CLAIM SUCCESS — Banner after claiming
+//  SHOW CLAIM SUCCESS
 // ============================================
 function showClaimSuccess(listingId) {
   const card = document
@@ -254,16 +294,19 @@ function showClaimSuccess(listingId) {
     const banner = document.createElement('div');
     banner.className = 'claimed-banner';
     banner.innerHTML = `
-      🎉 You claimed this food!
-      Please pick it up at the listed location
-      during the pickup window.
+      🎉 You claimed this food! Chat with the donor
+      to coordinate pickup details.
     `;
     card.appendChild(banner);
   }
+
+  // Show chat button
+  const chatBtn = document.getElementById(`chat-btn-${listingId}`);
+  if (chatBtn) chatBtn.classList.remove('hidden');
 }
 
 // ============================================
-//  HELPER — Format date nicely
+//  HELPER — Format date
 // ============================================
 function formatDateTime(date) {
   if (!date) return '';

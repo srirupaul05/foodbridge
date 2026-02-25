@@ -17,6 +17,11 @@
   <link rel="stylesheet" href="css/recipient.css"/>
   <link rel="stylesheet" href="css/tracker.css"/>
   <link rel="stylesheet" href="css/impact.css"/>
+  <link rel="stylesheet" href="css/chat.css"/>
+  <link rel="stylesheet" href="css/map.css"/>
+
+<!-- Leaflet Map CSS — free, no API key -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 </head>
 <body>
 
@@ -169,8 +174,45 @@
           <input type="datetime-local" id="pickup-end"/>
           <input type="text" id="food-location" placeholder="Pickup location / address"/>
           <textarea id="food-notes" placeholder="Any additional notes..."></textarea>
-          <button onclick="postFood()" class="btn-primary">Post Food Listing ✅</button>
-          <p id="donor-msg" class="success-msg"></p>
+
+<!-- Camera Section -->
+<div class="camera-section" id="camera-section">
+  <h4>📸 Food Photo (Required)</h4>
+  <p class="camera-hint">Live photo only — no uploads from gallery allowed</p>
+
+  <!-- Camera Preview -->
+  <div class="camera-container" id="camera-container">
+    <video id="camera-feed" autoplay playsinline></video>
+    <canvas id="camera-canvas" style="display:none"></canvas>
+  </div>
+
+  <!-- Camera Controls -->
+  <div class="camera-controls">
+    <button type="button" onclick="startCamera()" 
+      class="btn-camera" id="btn-start-camera">
+      📷 Open Camera
+    </button>
+    <button type="button" onclick="capturePhoto()" 
+      class="btn-capture hidden" id="btn-capture">
+      🔴 Take Photo
+    </button>
+    <button type="button" onclick="retakePhoto()" 
+      class="btn-retake hidden" id="btn-retake">
+      🔄 Retake
+    </button>
+  </div>
+
+  <!-- Photo Preview -->
+  <div id="photo-preview-container" class="hidden">
+    <img id="photo-preview" src="" alt="Food photo preview"/>
+    <p class="photo-ok">✅ Photo captured!</p>
+  </div>
+</div>
+
+<button onclick="postFood()" class="btn-primary">
+  Post Food Listing ✅
+</button>
+<p id="donor-msg" class="success-msg"></p>
         </div>
 
         <!-- My Donations -->
@@ -190,7 +232,7 @@
       <h1 class="page-title">🍽️ Find Food Near You</h1>
       <p class="page-subtitle">Browse available food listings and claim what you need</p>
 
-      <!-- Filters -->
+<!-- Filters & View Toggle -->
       <div class="filters">
         <select id="filter-category" onchange="filterListings()">
           <option value="">All Categories</option>
@@ -202,12 +244,36 @@
           <option value="cooked">🍲 Cooked Meal</option>
           <option value="packaged">📦 Packaged Food</option>
         </select>
-        <button onclick="loadListings()" class="btn-secondary">🔄 Refresh</button>
+        <button onclick="loadListings()" class="btn-secondary">
+          🔄 Refresh
+        </button>
+
+        <!-- View Toggle -->
+        <div class="view-toggle">
+          <button
+            class="btn-view active"
+            id="btn-grid-view"
+            onclick="switchView('grid')">
+            ▦ Grid
+          </button>
+          <button
+            class="btn-view"
+            id="btn-map-view"
+            onclick="switchView('map')">
+            📍 Map
+          </button>
+        </div>
       </div>
 
       <!-- Food Listings Grid -->
       <div id="food-listings-grid" class="listings-grid">
         <p class="empty-msg">Loading available food...</p>
+      </div>
+
+      <!-- Map View -->
+      <div id="food-listings-map" class="map-container hidden">
+        <div id="leaflet-map"></div>
+        <div id="map-popup" class="map-popup hidden"></div>
       </div>
     </div>
   </div>
@@ -286,7 +352,7 @@
     </div>
   </div>
 
-  <!-- JS Files — order matters! -->
+ <!-- JS Files — order matters! -->
   <script type="module" src="js/firebase-config.js"></script>
   <script type="module" src="js/auth.js"></script>
   <script type="module" src="js/app.js"></script>
@@ -294,6 +360,47 @@
   <script type="module" src="js/recipient.js"></script>
   <script type="module" src="js/tracker.js"></script>
   <script type="module" src="js/impact.js"></script>
+  <script type="module" src="js/chat.js"></script>
+  <script type="module" src="js/map.js"></script>
+
+<!-- Leaflet Map JS — free, no API key -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- ===== CHAT MODAL ===== -->
+  <div id="chat-modal" class="chat-modal hidden">
+    <div class="chat-window">
+
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <div class="chat-header-info">
+          <h3 id="chat-title">💬 Chat</h3>
+          <p id="chat-subtitle">Real-time messaging</p>
+        </div>
+        <button onclick="closeChat()" class="btn-close-chat">✕</button>
+      </div>
+
+      <!-- Messages Area -->
+      <div class="chat-messages" id="chat-messages">
+        <p class="chat-loading">⏳ Loading messages...</p>
+      </div>
+
+      <!-- Input Area -->
+      <div class="chat-input-area">
+        <input
+          type="text"
+          id="chat-input"
+          placeholder="Type a message..."
+          onkeypress="handleChatKeyPress(event)"
+        />
+        <button onclick="sendMessage()" class="btn-send">
+          Send 📨
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+</body>
 
 </body>
 </html>
