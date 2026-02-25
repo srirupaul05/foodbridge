@@ -16,6 +16,7 @@ import {
   updateDoc,
   serverTimestamp,
   getDoc,
+  getDocs,
   setDoc,
   increment
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -235,17 +236,47 @@ window.postFood = async function() {
     return;
   }
 
-  if (!location) {
+if (!location) {
     msgEl.style.color = '#e63946';
     msgEl.textContent = '⚠️ Please enter pickup location.';
     return;
   }
 
-  // Show loading
+  // ---- Anti-abuse limits ----
+  // Max 50kg per donation
+  if (parseFloat(quantity) > 50) {
+    msgEl.style.color = '#e63946';
+    msgEl.textContent =
+      '⚠️ Maximum 50kg per donation. Contact us for larger donations.';
+    return;
+  }
+
+// Show loading
   msgEl.style.color = 'var(--green)';
   msgEl.textContent = '⏳ Posting your listing...';
 
   try {
+    // ---- Check daily limit (max 3 donations per day) ----
+    const today     = new Date();
+    today.setHours(0, 0, 0, 0);
+    const todayEnd  = new Date(today);
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const todayQuery = query(
+      collection(db, 'foodListings'),
+      where('donorId',   '==', window.currentUser.uid),
+      where('createdAt', '>=', today),
+      where('createdAt', '<=', todayEnd)
+    );
+
+    const todayDocs = await getDocs(todayQuery);
+    if (todayDocs.size >= 3) {
+      msgEl.style.color = '#e63946';
+      msgEl.textContent =
+        '⚠️ Daily limit reached! Maximum 3 donations per day.';
+      return;
+    }
+
     // Add to Firestore with photo
     await addDoc(collection(db, 'foodListings'), {
       donorId:       window.currentUser.uid,
@@ -265,9 +296,7 @@ window.postFood = async function() {
       createdAt:     serverTimestamp()
     });
 
-    // Update global and user stats
-    await updateGlobalStats(parseFloat(quantity));
-    await updateUserStats(window.currentUser.uid, parseFloat(quantity));
+ 
 
     // Show success
     msgEl.style.color = 'var(--green)';

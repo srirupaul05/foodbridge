@@ -254,3 +254,24 @@
   flex-direction: column;
   gap: 10px;
 }
+
+/* ---- Search Bar ---- */
+.search-bar {
+  margin-bottom: 16px;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 50px;
+  border: 2px solid #e0e8e2;
+  font-size: 1rem;
+  background: var(--white);
+  margin-bottom: 0;
+  transition: all 0.2s;
+}
+
+.search-bar input:focus {
+  border-color: var(--green-light);
+  box-shadow: 0 0 0 3px rgba(64,145,108,0.1);
+}

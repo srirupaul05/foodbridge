@@ -168,10 +168,16 @@
           </select>
           <input type="number" id="food-quantity" placeholder="Quantity (in kg or servings)"/>
           <input type="text" id="food-unit" placeholder="Unit (kg / servings / packets)"/>
+          
+          <label>📅 Expiry Date & Time (when food goes bad)</label>
           <input type="datetime-local" id="food-expiry"/>
-          <label>Pickup Window</label>
+
+          <label>🕐 Pickup Window Start (earliest pickup time)</label>
           <input type="datetime-local" id="pickup-start"/>
+
+          <label>🕑 Pickup Window End (latest pickup time)</label>
           <input type="datetime-local" id="pickup-end"/>
+
           <input type="text" id="food-location" placeholder="Pickup location / address"/>
           <textarea id="food-notes" placeholder="Any additional notes..."></textarea>
 
@@ -232,7 +238,17 @@
       <h1 class="page-title">🍽️ Find Food Near You</h1>
       <p class="page-subtitle">Browse available food listings and claim what you need</p>
 
-<!-- Filters & View Toggle -->
+<!-- Search Bar -->
+      <div class="search-bar">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="🔍 Search food or location..."
+          oninput="filterListings()"
+        />
+      </div>
+
+      <!-- Filters & View Toggle -->
       <div class="filters">
         <select id="filter-category" onchange="filterListings()">
           <option value="">All Categories</option>
@@ -244,6 +260,17 @@
           <option value="cooked">🍲 Cooked Meal</option>
           <option value="packaged">📦 Packaged Food</option>
         </select>
+
+        <select id="filter-expiry" onchange="filterListings()">
+          <option value="">All Expiry</option>
+          <option value="today">⚡ Today only</option>
+          <option value="urgent">🔴 Urgent (1-2 days)</option>
+          <option value="week">✅ This week</option>
+        </select>
+
+        <button onclick="resetFilters()" class="btn-secondary">
+          ✕ Reset
+        </button>
         <button onclick="loadListings()" class="btn-secondary">
           🔄 Refresh
         </button>

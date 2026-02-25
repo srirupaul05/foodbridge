@@ -13,7 +13,10 @@ import {
   updateDoc,
   addDoc,
   serverTimestamp,
-  onSnapshot
+  onSnapshot,
+  getDoc,
+  setDoc,
+  increment
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // Store all listings for filtering
@@ -248,6 +251,17 @@ window.claimFood = async function(listingId, donorId) {
       status:        'claimed'
     });
 
+    // ---- Update stats only when food is CLAIMED ----
+    // Get listing details for quantity
+    const listingDoc = await getDoc(doc(db, 'foodListings', listingId));
+    if (listingDoc.exists()) {
+      const listingData = listingDoc.data();
+      const kg          = listingData.quantity || 1;
+
+      // Update global stats
+      await updateClaimedStats(kg, donorId);
+    }
+
     if (btn) {
       btn.textContent = '✅ Claimed!';
       btn.className   = 'btn-claim btn-claimed';
@@ -271,14 +285,63 @@ window.claimFood = async function(listingId, donorId) {
 // ============================================
 window.filterListings = function() {
   const category = document.getElementById('filter-category').value;
+  const expiry   = document.getElementById('filter-expiry').value;
+  const search   = document.getElementById('search-input')
+                    ?.value.toLowerCase().trim();
 
-  if (!category) {
-    renderListings(allListings);
-  } else {
-    const filtered = allListings.filter(
+  let filtered = [...allListings];
+
+  // ---- Filter by category ----
+  if (category) {
+    filtered = filtered.filter(
       item => item.category === category
     );
-    renderListings(filtered);
+  }
+
+  // ---- Filter by expiry ----
+  if (expiry) {
+    const now = new Date();
+    filtered = filtered.filter(item => {
+      const expiryDate = item.expiryDate?.toDate();
+      if (!expiryDate) return false;
+      const daysLeft = Math.ceil(
+        (expiryDate - now) / (1000 * 60 * 60 * 24)
+      );
+
+      if (expiry === 'today')  return daysLeft === 0;
+      if (expiry === 'urgent') return daysLeft >= 1 && daysLeft <= 2;
+      if (expiry === 'week')   return daysLeft >= 0 && daysLeft <= 7;
+      return true;
+    });
+  }
+
+  // ---- Filter by search ----
+  if (search) {
+    filtered = filtered.filter(item =>
+      item.foodName?.toLowerCase().includes(search) ||
+      item.location?.toLowerCase().includes(search) ||
+      item.donorName?.toLowerCase().includes(search) ||
+      item.category?.toLowerCase().includes(search)
+    );
+  }
+
+  renderListings(filtered);
+
+  // Update map too
+  if (typeof updateMapListings === 'function') {
+    updateMapListings(filtered);
+  }
+};
+
+// ---- Reset all filters ----
+window.resetFilters = function() {
+  document.getElementById('filter-category').value = '';
+  document.getElementById('filter-expiry').value   = '';
+  const searchEl = document.getElementById('search-input');
+  if (searchEl) searchEl.value = '';
+  renderListings(allListings);
+  if (typeof updateMapListings === 'function') {
+    updateMapListings(allListings);
   }
 };
 
@@ -316,4 +379,34 @@ function formatDateTime(date) {
     hour:   '2-digit',
     minute: '2-digit'
   });
+  // ============================================
+//  UPDATE STATS ON CLAIM
+// ============================================
+async function updateClaimedStats(kg, donorId) {
+  const meals = Math.round(kg * 4);
+  const co2   = Math.round(kg * 2.5);
+  const water = Math.round(kg * 250);
+
+  try {
+    // Update global stats
+    await setDoc(doc(db, 'stats', 'global'), {
+      totalKg:     increment(kg),
+      totalMeals:  increment(meals),
+      totalCo2:    increment(co2),
+      totalDonors: increment(1)
+    }, { merge: true });
+
+    // Update donor's personal stats
+    await setDoc(doc(db, 'userStats', donorId), {
+      totalKg:    increment(kg),
+      totalMeals: increment(meals),
+      totalCo2:   increment(co2),
+      totalWater: increment(water),
+      donations:  increment(1)
+    }, { merge: true });
+
+  } catch(e) {
+    console.log('Stats update error:', e);
+  }
+}
 }
