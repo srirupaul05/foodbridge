@@ -392,12 +392,14 @@
     <div id="admin-tab-users" class="admin-table-container">
       <div class="admin-table-header">
         <h3>👥 All Users</h3>
-        <input
-          type="text"
-          id="admin-search-users"
-          placeholder="🔍 Search users..."
-          oninput="searchAdminTable('users')"
-        />
+     <input
+        type="text"
+        id="admin-search-users"
+        placeholder="🔍 Search users..."
+        autocomplete="off"
+        oninput="searchAdminTable('users')"
+      />
+
       </div>
       <div class="table-wrapper">
         <table id="users-table">
@@ -425,12 +427,14 @@
          class="admin-table-container hidden">
       <div class="admin-table-header">
         <h3>🍱 All Donations</h3>
-        <input
-          type="text"
-          id="admin-search-donations"
-          placeholder="🔍 Search donations..."
-          oninput="searchAdminTable('donations')"
-        />
+      <input
+        type="text"
+        id="admin-search-donations"
+        placeholder="🔍 Search donations..."
+        autocomplete="off"
+        oninput="searchAdminTable('donations')"
+      />
+
       </div>
       <div class="table-wrapper">
         <table id="donations-table">
@@ -465,8 +469,10 @@
           type="text"
           id="admin-search-claims"
           placeholder="🔍 Search claims..."
+          autocomplete="off"
           oninput="searchAdminTable('claims')"
         />
+        
       </div>
       <div class="table-wrapper">
         <table id="claims-table">
