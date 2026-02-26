@@ -17,16 +17,22 @@ window.currentUserData = null;
 // ============================================
 //  SHOW PAGE — switches between pages
 // ============================================
-window.showPage = function(pageName) {
+  window.showPage = function(pageName) {
   // Hide all pages
   pages.forEach(p => {
     const el = document.getElementById(`page-${p}`);
-    if (el) el.classList.remove('active');
+    if (el) {
+      el.classList.remove('active');
+      el.classList.add('hidden');
+    }
   });
 
   // Show selected page
   const target = document.getElementById(`page-${pageName}`);
-  if (target) target.classList.add('active');
+  if (target) {
+    target.classList.remove('hidden');
+    target.classList.add('active');
+  }
 
   // Update active nav link
   document.querySelectorAll('.nav-links a').forEach(link => {
@@ -52,6 +58,10 @@ window.showPage = function(pageName) {
   }
   if (pageName === 'tracker' && window.currentUser) {
     if (typeof loadTrackerItems === 'function') loadTrackerItems();
+  }
+
+  if (pageName === 'admin') {
+    if (typeof loadAdmin === 'function') loadAdmin();
   }
 };
 
@@ -88,6 +98,20 @@ onAuthStateChanged(auth, async (user) => {
 
     // Load home stats
     loadHomeStats();
+
+    // Reload current page data after login
+    const activePage = document.querySelector('.page.active');
+    if (activePage) {
+      const pageId = activePage.id.replace('page-', '');
+      if (pageId === 'donor') loadMyDonations();
+      if (pageId === 'recipient') loadListings();
+      if (pageId === 'impact') { loadImpact(); loadLeaderboard(); }
+    }
+
+    // Show admin nav if admin
+    if (typeof showAdminNav === 'function') {
+      showAdminNav();
+    }
 
   } else {
     // User is logged out

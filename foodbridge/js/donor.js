@@ -56,6 +56,10 @@ window.startCamera = async function() {
   } catch (error) {
     console.error('Camera error:', error);
 
+// Remove any existing error message first
+    const existing = document.querySelector('.no-camera-msg');
+    if (existing) existing.remove();
+
     // Show helpful error message
     const cameraSection = document.getElementById('camera-section');
     const noCamera = document.createElement('p');

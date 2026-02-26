@@ -19,6 +19,7 @@
   <link rel="stylesheet" href="css/impact.css"/>
   <link rel="stylesheet" href="css/chat.css"/>
   <link rel="stylesheet" href="css/map.css"/>
+  <link rel="stylesheet" href="css/admin.css"/>
 
 <!-- Leaflet Map CSS — free, no API key -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -34,6 +35,7 @@
       <a href="#" onclick="showPage('donor')">Donate Food</a>
       <a href="#" onclick="showPage('tracker')">Expiry Tracker</a>
       <a href="#" onclick="showPage('impact')">Impact</a>
+      <a href="#" onclick="showPage('admin')" id="nav-admin" class="hidden">👑 Admin</a>
     </div>
     <div class="nav-auth" id="navAuth">
       <button onclick="showPage('auth')" class="btn-login">Login</button>
@@ -168,7 +170,7 @@
           </select>
           <input type="number" id="food-quantity" placeholder="Quantity (in kg or servings)"/>
           <input type="text" id="food-unit" placeholder="Unit (kg / servings / packets)"/>
-          
+
           <label>📅 Expiry Date & Time (when food goes bad)</label>
           <input type="datetime-local" id="food-expiry"/>
 
@@ -334,6 +336,163 @@
     </div>
   </div>
 
+  <!-- ===== ADMIN PAGE ===== -->
+<div id="page-admin" class="page hidden">
+  <div class="page-container">
+
+    <div class="admin-header">
+      <h1>👑 Admin Dashboard</h1>
+      <p>Welcome back, Srirup! Here's everything happening on FoodBridge.</p>
+    </div>
+
+    <!-- Overview Cards -->
+    <div class="admin-overview">
+      <div class="admin-card green">
+        <h2 id="admin-total-users">0</h2>
+        <p>Total Users</p>
+        <span>👥</span>
+      </div>
+      <div class="admin-card blue">
+        <h2 id="admin-total-donations">0</h2>
+        <p>Total Donations</p>
+        <span>🍱</span>
+      </div>
+      <div class="admin-card orange">
+        <h2 id="admin-total-claims">0</h2>
+        <p>Total Claims</p>
+        <span>🤝</span>
+      </div>
+      <div class="admin-card teal">
+        <h2 id="admin-total-kg">0</h2>
+        <p>KG Rescued</p>
+        <span>♻️</span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="admin-tabs">
+      <button
+        class="admin-tab active"
+        onclick="switchAdminTab('users')">
+        👥 Users
+      </button>
+      <button
+        class="admin-tab"
+        onclick="switchAdminTab('donations')">
+        🍱 Donations
+      </button>
+      <button
+        class="admin-tab"
+        onclick="switchAdminTab('claims')">
+        🤝 Claims
+      </button>
+    </div>
+
+    <!-- Users Table -->
+    <div id="admin-tab-users" class="admin-table-container">
+      <div class="admin-table-header">
+        <h3>👥 All Users</h3>
+        <input
+          type="text"
+          id="admin-search-users"
+          placeholder="🔍 Search users..."
+          oninput="searchAdminTable('users')"
+        />
+      </div>
+      <div class="table-wrapper">
+        <table id="users-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Joined</th>
+              <th>Donations</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <tr><td colspan="6" class="table-loading">
+              ⏳ Loading users...
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Donations Table -->
+    <div id="admin-tab-donations"
+         class="admin-table-container hidden">
+      <div class="admin-table-header">
+        <h3>🍱 All Donations</h3>
+        <input
+          type="text"
+          id="admin-search-donations"
+          placeholder="🔍 Search donations..."
+          oninput="searchAdminTable('donations')"
+        />
+      </div>
+      <div class="table-wrapper">
+        <table id="donations-table">
+          <thead>
+            <tr>
+              <th>Food</th>
+              <th>Donor</th>
+              <th>Email</th>
+              <th>Qty</th>
+              <th>Location</th>
+              <th>Status</th>
+              <th>Posted</th>
+              <th>Expiry</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="donations-tbody">
+            <tr><td colspan="9" class="table-loading">
+              ⏳ Loading donations...
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Claims Table -->
+    <div id="admin-tab-claims"
+         class="admin-table-container hidden">
+      <div class="admin-table-header">
+        <h3>🤝 All Claims</h3>
+        <input
+          type="text"
+          id="admin-search-claims"
+          placeholder="🔍 Search claims..."
+          oninput="searchAdminTable('claims')"
+        />
+      </div>
+      <div class="table-wrapper">
+        <table id="claims-table">
+          <thead>
+            <tr>
+              <th>Food</th>
+              <th>Donor</th>
+              <th>Donor Email</th>
+              <th>Recipient</th>
+              <th>Recipient Email</th>
+              <th>Claimed At</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="claims-tbody">
+            <tr><td colspan="7" class="table-loading">
+              ⏳ Loading claims...
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
   <!-- ===== IMPACT PAGE ===== -->
   <div id="page-impact" class="page">
     <div class="page-container">
@@ -389,6 +548,7 @@
   <script type="module" src="js/impact.js"></script>
   <script type="module" src="js/chat.js"></script>
   <script type="module" src="js/map.js"></script>
+  <script type="module" src="js/admin.js"></script>
 
 <!-- Leaflet Map JS — free, no API key -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
