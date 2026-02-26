@@ -4,7 +4,10 @@
 // ============================================
 
 import { auth, db } from './firebase-config.js';
-import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import {
+  onAuthStateChanged,
+  sendEmailVerification
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // ---- All page IDs ----
@@ -92,9 +95,12 @@ onAuthStateChanged(auth, async (user) => {
     if (navAuth) navAuth.classList.add('hidden');
     if (navUser) navUser.classList.remove('hidden');
     if (userNameDisplay) {
-      userNameDisplay.textContent =
-        `👋 ${window.currentUserData?.name || user.email}`;
-    }
+        // Wait for user data then show name
+        const displayName = window.currentUserData?.name 
+          || user.displayName 
+          || user.email.split('@')[0];
+        userNameDisplay.textContent = `👋 ${displayName}`;
+      }
 
     // Load home stats
     loadHomeStats();
@@ -111,6 +117,15 @@ onAuthStateChanged(auth, async (user) => {
     // Show admin nav if admin
     if (typeof showAdminNav === 'function') {
       showAdminNav();
+    }
+
+    // Check email verification
+    if (!user.emailVerified) {
+      const banner = document.getElementById('verify-banner');
+      if (banner) banner.classList.remove('hidden');
+    } else {
+      const banner = document.getElementById('verify-banner');
+      if (banner) banner.classList.add('hidden');
     }
 
   } else {
@@ -181,3 +196,28 @@ window.addEventListener('DOMContentLoaded', () => {
   showPage('home');
   console.log('🌱 FoodBridge loaded!');
 });
+
+// ============================================
+//  VERIFICATION HELPERS
+// ============================================
+window.resendBannerVerification = async function() {
+  if (!auth.currentUser) return;
+  try {
+    await sendEmailVerification(auth.currentUser);
+    alert('✅ Verification email sent! Check your inbox.');
+  } catch (e) {
+    alert('❌ Could not send email. Try again in a few minutes.');
+  }
+};
+
+window.checkVerificationStatus = async function() {
+  if (!auth.currentUser) return;
+  await auth.currentUser.reload();
+  if (auth.currentUser.emailVerified) {
+    const banner = document.getElementById('verify-banner');
+    if (banner) banner.classList.add('hidden');
+    alert('✅ Email verified! You now have full access.');
+  } else {
+    alert('❌ Email not verified yet. Please check your inbox!');
+  }
+};

@@ -156,6 +156,15 @@ window.postFood = async function() {
     return;
   }
 
+  // Check if email is verified
+  if (!window.currentUser.emailVerified) {
+    const msgEl = document.getElementById('donor-msg');
+    msgEl.style.color = '#e63946';
+    msgEl.textContent =
+      '⚠️ Please verify your email first! Check your inbox.';
+    return;
+  }
+
   // Check if user is a donor
   if (window.currentUserData?.role === 'recipient') {
     document.getElementById('donor-msg').textContent =

@@ -7,7 +7,8 @@ import { auth, db } from './firebase-config.js';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut
+  signOut,
+  sendEmailVerification
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
   doc,
@@ -15,7 +16,6 @@ import {
   getDoc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
 // ============================================
 //  SWITCH TAB — Login / Signup toggle
 // ============================================
@@ -74,25 +74,28 @@ window.signupUser = async function() {
   errorEl.style.color = 'var(--green)';
 
   try {
-    // Create user in Firebase Auth
+    // Step 1 — Create user in Firebase Auth
     const userCredential = await createUserWithEmailAndPassword(
       auth, email, password
     );
     const user = userCredential.user;
 
-    // Save user profile in Firestore
+    // Step 2 — Send verification email IMMEDIATELY
+    await sendEmailVerification(user);
+
+    // Step 3 — Save user profile in Firestore
     await setDoc(doc(db, 'users', user.uid), {
-      name:         name,
-      email:        email,
-      role:         role,
-      impactScore:  0,
-      totalKg:      0,
-      totalMeals:   0,
-      badges:       [],
-      joinedAt:     serverTimestamp()
+      name:        name,
+      email:       email,
+      role:        role,
+      impactScore: 0,
+      totalKg:     0,
+      totalMeals:  0,
+      badges:      [],
+      joinedAt:    serverTimestamp()
     });
 
-    // Also initialize their stats
+    // Step 4 — Initialize user stats
     await setDoc(doc(db, 'userStats', user.uid), {
       totalKg:    0,
       totalMeals: 0,
@@ -101,16 +104,13 @@ window.signupUser = async function() {
       donations:  0
     });
 
-    errorEl.textContent = '';
+    // Step 5 — Sign out until verified
+    await signOut(auth);
 
-    // Redirect based on role
-    if (role === 'donor') {
-      showPage('donor');
-    } else if (role === 'recipient') {
-      showPage('recipient');
-    } else {
-      showPage('home');
-    }
+    // Step 6 — Show success message
+    errorEl.style.color = 'var(--green)';
+    errorEl.textContent =
+      '✅ Account created! Please check your email inbox and click the verification link before logging in.';
 
   } catch (error) {
     errorEl.style.color = '#e63946';
@@ -146,8 +146,52 @@ window.loginUser = async function() {
     );
     const user = userCredential.user;
 
+    // Check email verified
+    if (!user.emailVerified) {
+      await signOut(auth);
+      errorEl.style.color = '#e63946';
+      errorEl.innerHTML = `
+        ⚠️ Please verify your email first! Check your inbox.
+        <br/>
+        <button onclick="resendVerification('${email}', '${password}')"
+          style="margin-top:8px;
+                 background:var(--green);
+                 color:white;
+                 border:none;
+                 padding:8px 16px;
+                 border-radius:50px;
+                 cursor:pointer;
+                 font-size:0.85rem">
+          📧 Resend Verification Email
+        </button>`;
+      return;
+    }
+
     // Get user role from Firestore
-    const userDoc = await getDoc(doc(db, 'users', user.uid));
+    let userDoc = await getDoc(doc(db, 'users', user.uid));
+
+    // If user not in Firestore, create their profile
+    if (!userDoc.exists()) {
+      await setDoc(doc(db, 'users', user.uid), {
+        name:        user.displayName || email.split('@')[0],
+        email:       email,
+        role:        'donor',
+        impactScore: 0,
+        totalKg:     0,
+        totalMeals:  0,
+        badges:      [],
+        joinedAt:    serverTimestamp()
+      });
+      await setDoc(doc(db, 'userStats', user.uid), {
+        totalKg:    0,
+        totalMeals: 0,
+        totalCo2:   0,
+        totalWater: 0,
+        donations:  0
+      });
+      userDoc = await getDoc(doc(db, 'users', user.uid));
+    }
+
     const userData = userDoc.data();
 
     errorEl.textContent = '';
@@ -197,3 +241,19 @@ function getFriendlyError(code) {
   };
   return errors[code] || '⚠️ Something went wrong. Please try again.';
 }
+
+// ============================================
+//  RESEND VERIFICATION EMAIL
+// ============================================
+window.resendVerification = async function(email, password) {
+  try {
+    const userCredential = await signInWithEmailAndPassword(
+      auth, email, password
+    );
+    await sendEmailVerification(userCredential.user);
+    await signOut(auth);
+    alert('✅ Verification email sent! Please check your inbox.');
+  } catch (e) {
+    alert('❌ Could not resend email. Please try again.');
+  }
+};

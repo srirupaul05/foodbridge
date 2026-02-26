@@ -26,6 +26,22 @@
 </head>
 <body>
 
+  <!-- Email Verification Banner -->
+  <div id="verify-banner" class="verify-banner hidden">
+    <p>
+      ⚠️ Your email is not verified!
+      Please check your inbox and click the verification link.
+      <button onclick="resendBannerVerification()"
+        class="btn-resend-verify">
+        📧 Resend Email
+      </button>
+      <button onclick="checkVerificationStatus()"
+        class="btn-check-verify">
+        ✅ I verified it!
+      </button>
+    </p>
+  </div>
+  
   <!-- NAVBAR -->
   <nav id="navbar">
     <div class="nav-logo">🌱 FoodBridge</div>
@@ -472,7 +488,7 @@
           autocomplete="off"
           oninput="searchAdminTable('claims')"
         />
-        
+
       </div>
       <div class="table-wrapper">
         <table id="claims-table">

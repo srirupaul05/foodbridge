@@ -195,3 +195,55 @@ label {
   .page-title { font-size: 1.6rem; }
   .page-container { padding: 24px 16px; }
 }
+
+/* ---- Verification Banner ---- */
+.verify-banner {
+  background: #fff3cd;
+  border-bottom: 2px solid #ffc107;
+  padding: 12px 20px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #856404;
+  font-weight: 500;
+}
+
+.verify-banner p {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 0;
+}
+
+.btn-resend-verify {
+  background: #ffc107;
+  color: #856404;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-resend-verify:hover {
+  background: #e0a800;
+}
+
+.btn-check-verify {
+  background: var(--green);
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-check-verify:hover {
+  background: var(--green-light);
+}

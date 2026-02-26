@@ -223,6 +223,12 @@ window.claimFood = async function(listingId, donorId) {
     return;
   }
 
+  // Check if email is verified
+  if (!window.currentUser.emailVerified) {
+    alert('⚠️ Please verify your email before claiming food!');
+    return;
+  }
+
   if (window.currentUser.uid === donorId) {
     alert('You cannot claim your own food listing!');
     return;
