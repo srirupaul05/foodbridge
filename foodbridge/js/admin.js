@@ -62,16 +62,8 @@ window.loadAdmin = async function() {
 window.showAdminNav = function() {
   if (!window.currentUser) return;
   if (ADMIN_EMAILS.includes(window.currentUser.email)) {
-    // Show admin nav link
-  const adminNav = document.getElementById('nav-admin');
-  if (adminNav) adminNav.classList.remove('hidden');
-
-  // Make admin page visible ONLY for admin
-  const adminPage = document.getElementById('page-admin');
-  if (adminPage) {
-    adminPage.classList.add('admin-visible');
-    adminPage.style.removeProperty('display');
-  }
+    const adminNav = document.getElementById('nav-admin');
+    if (adminNav) adminNav.classList.remove('hidden');
   }
 };
 
