@@ -146,8 +146,13 @@ window.loginUser = async function() {
     );
     const user = userCredential.user;
 
-    // Check email verified
-    if (!user.emailVerified) {
+    // Skip verification check for admin emails
+    const adminEmails = [
+      'paulsrirup2005@gmail.com',
+      'srirupaul14@gmail.com'
+    ];
+
+    if (!user.emailVerified && !adminEmails.includes(email)) {
       await signOut(auth);
       errorEl.style.color = '#e63946';
       errorEl.innerHTML = `
