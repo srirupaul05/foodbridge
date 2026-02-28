@@ -205,6 +205,14 @@ window.animateCounter = function(elementId, target) {
 //  START — show home page on load
 // ============================================
 window.addEventListener('DOMContentLoaded', () => {
+  // Hide ALL pages first including admin
+  pages.forEach(p => {
+    const el = document.getElementById(`page-${p}`);
+    if (el) {
+      el.classList.remove('active');
+      el.classList.add('hidden');
+    }
+  });
   showPage('home');
   console.log('🌱 FoodBridge loaded!');
 });
