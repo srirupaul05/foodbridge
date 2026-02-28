@@ -248,20 +248,3 @@ label {
   background: var(--green-light);
 }
 
-/* ---- Admin page hidden by default ---- */
-#page-admin {
-  display: none !important;
-}
-
-#page-admin.active {
-  display: block !important;
-}
-
-#page-admin {
-  display: none !important;
-}
-
-#page-admin.active {
-  display: block !important;
-  animation: fadeIn 0.35s ease;
-}
