@@ -21,8 +21,8 @@
   <link rel="stylesheet" href="css/map.css"/>
   <link rel="stylesheet" href="css/admin.css"/>
 
-<!-- Leaflet Map CSS — free, no API key -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <!-- Leaflet Map CSS — free, no API key -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 </head>
 <body>
 
@@ -31,17 +31,15 @@
     <p>
       ⚠️ Your email is not verified!
       Please check your inbox and click the verification link.
-      <button onclick="resendBannerVerification()"
-        class="btn-resend-verify">
+      <button onclick="resendBannerVerification()" class="btn-resend-verify">
         📧 Resend Email
       </button>
-      <button onclick="checkVerificationStatus()"
-        class="btn-check-verify">
+      <button onclick="checkVerificationStatus()" class="btn-check-verify">
         ✅ I verified it!
       </button>
     </p>
   </div>
-  
+
   <!-- NAVBAR -->
   <nav id="navbar">
     <div class="nav-logo">🌱 FoodBridge</div>
@@ -199,44 +197,44 @@
           <input type="text" id="food-location" placeholder="Pickup location / address"/>
           <textarea id="food-notes" placeholder="Any additional notes..."></textarea>
 
-<!-- Camera Section -->
-<div class="camera-section" id="camera-section">
-  <h4>📸 Food Photo (Required)</h4>
-  <p class="camera-hint">Live photo only — no uploads from gallery allowed</p>
+          <!-- Camera Section -->
+          <div class="camera-section" id="camera-section">
+            <h4>📸 Food Photo (Required)</h4>
+            <p class="camera-hint">Live photo only — no uploads from gallery allowed</p>
 
-  <!-- Camera Preview -->
-  <div class="camera-container" id="camera-container">
-    <video id="camera-feed" autoplay playsinline></video>
-    <canvas id="camera-canvas" style="display:none"></canvas>
-  </div>
+            <!-- Camera Preview -->
+            <div class="camera-container" id="camera-container">
+              <video id="camera-feed" autoplay playsinline></video>
+              <canvas id="camera-canvas" style="display:none"></canvas>
+            </div>
 
-  <!-- Camera Controls -->
-  <div class="camera-controls">
-    <button type="button" onclick="startCamera()" 
-      class="btn-camera" id="btn-start-camera">
-      📷 Open Camera
-    </button>
-    <button type="button" onclick="capturePhoto()" 
-      class="btn-capture hidden" id="btn-capture">
-      🔴 Take Photo
-    </button>
-    <button type="button" onclick="retakePhoto()" 
-      class="btn-retake hidden" id="btn-retake">
-      🔄 Retake
-    </button>
-  </div>
+            <!-- Camera Controls -->
+            <div class="camera-controls">
+              <button type="button" onclick="startCamera()"
+                class="btn-camera" id="btn-start-camera">
+                📷 Open Camera
+              </button>
+              <button type="button" onclick="capturePhoto()"
+                class="btn-capture hidden" id="btn-capture">
+                🔴 Take Photo
+              </button>
+              <button type="button" onclick="retakePhoto()"
+                class="btn-retake hidden" id="btn-retake">
+                🔄 Retake
+              </button>
+            </div>
 
-  <!-- Photo Preview -->
-  <div id="photo-preview-container" class="hidden">
-    <img id="photo-preview" src="" alt="Food photo preview"/>
-    <p class="photo-ok">✅ Photo captured!</p>
-  </div>
-</div>
+            <!-- Photo Preview -->
+            <div id="photo-preview-container" class="hidden">
+              <img id="photo-preview" src="" alt="Food photo preview"/>
+              <p class="photo-ok">✅ Photo captured!</p>
+            </div>
+          </div>
 
-<button onclick="postFood()" class="btn-primary">
-  Post Food Listing ✅
-</button>
-<p id="donor-msg" class="success-msg"></p>
+          <button onclick="postFood()" class="btn-primary">
+            Post Food Listing ✅
+          </button>
+          <p id="donor-msg" class="success-msg"></p>
         </div>
 
         <!-- My Donations -->
@@ -256,7 +254,7 @@
       <h1 class="page-title">🍽️ Find Food Near You</h1>
       <p class="page-subtitle">Browse available food listings and claim what you need</p>
 
-<!-- Search Bar -->
+      <!-- Search Bar -->
       <div class="search-bar">
         <input
           type="text"
@@ -286,27 +284,13 @@
           <option value="week">✅ This week</option>
         </select>
 
-        <button onclick="resetFilters()" class="btn-secondary">
-          ✕ Reset
-        </button>
-        <button onclick="loadListings()" class="btn-secondary">
-          🔄 Refresh
-        </button>
+        <button onclick="resetFilters()" class="btn-secondary">✕ Reset</button>
+        <button onclick="loadListings()" class="btn-secondary">🔄 Refresh</button>
 
         <!-- View Toggle -->
         <div class="view-toggle">
-          <button
-            class="btn-view active"
-            id="btn-grid-view"
-            onclick="switchView('grid')">
-            ▦ Grid
-          </button>
-          <button
-            class="btn-view"
-            id="btn-map-view"
-            onclick="switchView('map')">
-            📍 Map
-          </button>
+          <button class="btn-view active" id="btn-grid-view" onclick="switchView('grid')">▦ Grid</button>
+          <button class="btn-view" id="btn-map-view" onclick="switchView('map')">📍 Map</button>
         </div>
       </div>
 
@@ -323,7 +307,7 @@
     </div>
   </div>
 
-<!-- ===== TRACKER PAGE ===== -->
+  <!-- ===== TRACKER PAGE ===== -->
   <div id="page-tracker" class="page">
     <div class="page-container">
       <h1 class="page-title">⏰ Expiry Tracker</h1>
@@ -340,14 +324,11 @@
         <div class="card tracker-form-card">
           <h3>➕ Add Grocery Item</h3>
 
-          <input type="text" id="item-name"
-            placeholder="Item name (e.g. Milk)"/>
+          <input type="text" id="item-name" placeholder="Item name (e.g. Milk)"/>
 
           <div class="tracker-row">
-            <input type="number" id="item-quantity"
-              placeholder="Quantity"/>
-            <input type="text" id="item-unit"
-              placeholder="Unit (kg / L / pcs)"/>
+            <input type="number" id="item-quantity" placeholder="Quantity"/>
+            <input type="text" id="item-unit" placeholder="Unit (kg / L / pcs)"/>
           </div>
 
           <select id="item-category">
@@ -365,9 +346,7 @@
           <label>📅 Expiry Date</label>
           <input type="date" id="item-expiry"/>
 
-          <button onclick="addTrackerItem()" class="btn-primary">
-            Add Item ➕
-          </button>
+          <button onclick="addTrackerItem()" class="btn-primary">Add Item ➕</button>
           <p id="tracker-msg" class="success-msg"></p>
         </div>
 
@@ -378,12 +357,10 @@
           <div class="tracker-controls">
             <h3>🛒 Your Grocery List</h3>
             <div class="tracker-sort">
-              <button class="btn-sort active" id="sort-soonest"
-                onclick="sortItems('soonest')">
+              <button class="btn-sort active" id="sort-soonest" onclick="sortItems('soonest')">
                 ⚡ Expiring Soon
               </button>
-              <button class="btn-sort" id="sort-latest"
-                onclick="sortItems('latest')">
+              <button class="btn-sort" id="sort-latest" onclick="sortItems('latest')">
                 📅 Latest First
               </button>
             </div>
@@ -400,169 +377,6 @@
       </div>
     </div>
   </div>
-
-  <!-- ===== ADMIN PAGE ===== -->
-  <div id="page-admin" class="page hidden">
-    <div class="page-container">
-
-    <div class="admin-header">
-      <h1>👑 Admin Dashboard</h1>
-      <p>Welcome back, Srirup! Here's everything happening on FoodBridge.</p>
-    </div>
-
-    <!-- Overview Cards -->
-    <div class="admin-overview">
-      <div class="admin-card green">
-        <h2 id="admin-total-users">0</h2>
-        <p>Total Users</p>
-        <span>👥</span>
-      </div>
-      <div class="admin-card blue">
-        <h2 id="admin-total-donations">0</h2>
-        <p>Total Donations</p>
-        <span>🍱</span>
-      </div>
-      <div class="admin-card orange">
-        <h2 id="admin-total-claims">0</h2>
-        <p>Total Claims</p>
-        <span>🤝</span>
-      </div>
-      <div class="admin-card teal">
-        <h2 id="admin-total-kg">0</h2>
-        <p>KG Rescued</p>
-        <span>♻️</span>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="admin-tabs">
-      <button
-        class="admin-tab active"
-        onclick="switchAdminTab('users')">
-        👥 Users
-      </button>
-      <button
-        class="admin-tab"
-        onclick="switchAdminTab('donations')">
-        🍱 Donations
-      </button>
-      <button
-        class="admin-tab"
-        onclick="switchAdminTab('claims')">
-        🤝 Claims
-      </button>
-    </div>
-
-    <!-- Users Table -->
-    <div id="admin-tab-users" class="admin-table-container">
-      <div class="admin-table-header">
-        <h3>👥 All Users</h3>
-     <input
-        type="text"
-        id="admin-search-users"
-        placeholder="🔍 Search users..."
-        autocomplete="off"
-        oninput="searchAdminTable('users')"
-      />
-
-      </div>
-      <div class="table-wrapper">
-        <table id="users-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Joined</th>
-              <th>Donations</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="users-tbody">
-            <tr><td colspan="6" class="table-loading">
-              ⏳ Loading users...
-            </td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Donations Table -->
-    <div id="admin-tab-donations"
-         class="admin-table-container hidden">
-      <div class="admin-table-header">
-        <h3>🍱 All Donations</h3>
-      <input
-        type="text"
-        id="admin-search-donations"
-        placeholder="🔍 Search donations..."
-        autocomplete="off"
-        oninput="searchAdminTable('donations')"
-      />
-
-      </div>
-      <div class="table-wrapper">
-        <table id="donations-table">
-          <thead>
-            <tr>
-              <th>Food</th>
-              <th>Donor</th>
-              <th>Email</th>
-              <th>Qty</th>
-              <th>Location</th>
-              <th>Status</th>
-              <th>Posted</th>
-              <th>Expiry</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="donations-tbody">
-            <tr><td colspan="9" class="table-loading">
-              ⏳ Loading donations...
-            </td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Claims Table -->
-    <div id="admin-tab-claims"
-         class="admin-table-container hidden">
-      <div class="admin-table-header">
-        <h3>🤝 All Claims</h3>
-        <input
-          type="text"
-          id="admin-search-claims"
-          placeholder="🔍 Search claims..."
-          autocomplete="off"
-          oninput="searchAdminTable('claims')"
-        />
-
-      </div>
-      <div class="table-wrapper">
-        <table id="claims-table">
-          <thead>
-            <tr>
-              <th>Food</th>
-              <th>Donor</th>
-              <th>Donor Email</th>
-              <th>Recipient</th>
-              <th>Recipient Email</th>
-              <th>Claimed At</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="claims-tbody">
-            <tr><td colspan="7" class="table-loading">
-              ⏳ Loading claims...
-            </td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
-</div>
 
   <!-- ===== IMPACT PAGE ===== -->
   <div id="page-impact" class="page">
@@ -609,7 +423,147 @@
     </div>
   </div>
 
- <!-- JS Files — order matters! -->
+  <!-- ===== ADMIN PAGE ===== -->
+  <div id="page-admin" class="page hidden">
+    <div class="page-container">
+
+      <div class="admin-header">
+        <h1>👑 Admin Dashboard</h1>
+        <p>Welcome back, Srirup! Here's everything happening on FoodBridge.</p>
+      </div>
+
+      <!-- Overview Cards -->
+      <div class="admin-overview">
+        <div class="admin-card green">
+          <h2 id="admin-total-users">0</h2>
+          <p>Total Users</p>
+          <span>👥</span>
+        </div>
+        <div class="admin-card blue">
+          <h2 id="admin-total-donations">0</h2>
+          <p>Total Donations</p>
+          <span>🍱</span>
+        </div>
+        <div class="admin-card orange">
+          <h2 id="admin-total-claims">0</h2>
+          <p>Total Claims</p>
+          <span>🤝</span>
+        </div>
+        <div class="admin-card teal">
+          <h2 id="admin-total-kg">0</h2>
+          <p>KG Rescued</p>
+          <span>♻️</span>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('users')">👥 Users</button>
+        <button class="admin-tab" onclick="switchAdminTab('donations')">🍱 Donations</button>
+        <button class="admin-tab" onclick="switchAdminTab('claims')">🤝 Claims</button>
+      </div>
+
+      <!-- Users Table -->
+      <div id="admin-tab-users" class="admin-table-container">
+        <div class="admin-table-header">
+          <h3>👥 All Users</h3>
+          <input
+            type="text"
+            id="admin-search-users"
+            placeholder="🔍 Search users..."
+            autocomplete="off"
+            oninput="searchAdminTable('users')"
+          />
+        </div>
+        <div class="table-wrapper">
+          <table id="users-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Joined</th>
+                <th>Donations</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="6" class="table-loading">⏳ Loading users...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Donations Table -->
+      <div id="admin-tab-donations" class="admin-table-container hidden">
+        <div class="admin-table-header">
+          <h3>🍱 All Donations</h3>
+          <input
+            type="text"
+            id="admin-search-donations"
+            placeholder="🔍 Search donations..."
+            autocomplete="off"
+            oninput="searchAdminTable('donations')"
+          />
+        </div>
+        <div class="table-wrapper">
+          <table id="donations-table">
+            <thead>
+              <tr>
+                <th>Food</th>
+                <th>Donor</th>
+                <th>Email</th>
+                <th>Qty</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Posted</th>
+                <th>Expiry</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="donations-tbody">
+              <tr><td colspan="9" class="table-loading">⏳ Loading donations...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Claims Table -->
+      <div id="admin-tab-claims" class="admin-table-container hidden">
+        <div class="admin-table-header">
+          <h3>🤝 All Claims</h3>
+          <input
+            type="text"
+            id="admin-search-claims"
+            placeholder="🔍 Search claims..."
+            autocomplete="off"
+            oninput="searchAdminTable('claims')"
+          />
+        </div>
+        <div class="table-wrapper">
+          <table id="claims-table">
+            <thead>
+              <tr>
+                <th>Food</th>
+                <th>Donor</th>
+                <th>Donor Email</th>
+                <th>Recipient</th>
+                <th>Recipient Email</th>
+                <th>Claimed At</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="claims-tbody">
+              <tr><td colspan="7" class="table-loading">⏳ Loading claims...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- JS Files — order matters! -->
   <script type="module" src="js/firebase-config.js"></script>
   <script type="module" src="js/auth.js"></script>
   <script type="module" src="js/app.js"></script>
@@ -621,8 +575,8 @@
   <script type="module" src="js/map.js"></script>
   <script type="module" src="js/admin.js"></script>
 
-<!-- Leaflet Map JS — free, no API key -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Leaflet Map JS — free, no API key -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <!-- ===== CHAT MODAL ===== -->
   <div id="chat-modal" class="chat-modal hidden">
@@ -650,15 +604,11 @@
           placeholder="Type a message..."
           onkeypress="handleChatKeyPress(event)"
         />
-        <button onclick="sendMessage()" class="btn-send">
-          Send 📨
-        </button>
+        <button onclick="sendMessage()" class="btn-send">Send 📨</button>
       </div>
 
     </div>
   </div>
-
-</body>
 
 </body>
 </html>
