@@ -338,3 +338,19 @@
     align-items: flex-start;
   }
 }
+
+/* ---- Fix sort button display ---- */
+.tracker-sort .btn-sort {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 4px;
+  background: #f0f5f1 !important;
+  border: 2px solid #e0e8e2 !important;
+  color: var(--gray) !important;
+}
+
+.tracker-sort .btn-sort.active {
+  background: var(--green) !important;
+  color: var(--white) !important;
+  border-color: var(--green) !important;
+}

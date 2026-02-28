@@ -16,7 +16,10 @@ const ADMIN_EMAILS = [
 ];
 
 // ---- All page IDs ----
-const pages = ['home', 'auth', 'donor', 'recipient', 'tracker', 'impact'];
+const pages = [
+  'home', 'auth', 'donor',
+  'recipient', 'tracker', 'impact', 'admin'
+];
 
 // ---- Current logged in user (global) ----
 window.currentUser = null;
