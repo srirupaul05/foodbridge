@@ -323,27 +323,76 @@
     </div>
   </div>
 
-  <!-- ===== TRACKER PAGE ===== -->
+<!-- ===== TRACKER PAGE ===== -->
   <div id="page-tracker" class="page">
     <div class="page-container">
       <h1 class="page-title">⏰ Expiry Tracker</h1>
       <p class="page-subtitle">Track your groceries and get notified before they expire</p>
 
+      <!-- Notification Banner -->
+      <div id="tracker-notif-banner" class="tracker-notif-banner hidden">
+        <span id="tracker-notif-text"></span>
+        <button onclick="dismissTrackerBanner()" class="btn-dismiss">✕</button>
+      </div>
+
       <div class="tracker-layout">
-        <!-- Add Item -->
-        <div class="card">
-          <h3>Add Grocery Item</h3>
-          <input type="text" id="item-name" placeholder="Item name (e.g. Milk)"/>
-          <input type="number" id="item-quantity" placeholder="Quantity"/>
-          <input type="text" id="item-unit" placeholder="Unit (litres / kg / packets)"/>
+        <!-- Add Item Form -->
+        <div class="card tracker-form-card">
+          <h3>➕ Add Grocery Item</h3>
+
+          <input type="text" id="item-name"
+            placeholder="Item name (e.g. Milk)"/>
+
+          <div class="tracker-row">
+            <input type="number" id="item-quantity"
+              placeholder="Quantity"/>
+            <input type="text" id="item-unit"
+              placeholder="Unit (kg / L / pcs)"/>
+          </div>
+
+          <select id="item-category">
+            <option value="">Select category...</option>
+            <option value="dairy">🥛 Dairy</option>
+            <option value="vegetables">🥦 Vegetables</option>
+            <option value="fruits">🍎 Fruits</option>
+            <option value="meat">🍗 Meat & Fish</option>
+            <option value="bakery">🍞 Bakery</option>
+            <option value="packaged">📦 Packaged</option>
+            <option value="leftovers">🍲 Leftovers</option>
+            <option value="other">📋 Other</option>
+          </select>
+
+          <label>📅 Expiry Date</label>
           <input type="date" id="item-expiry"/>
-          <button onclick="addTrackerItem()" class="btn-primary">Add Item ➕</button>
+
+          <button onclick="addTrackerItem()" class="btn-primary">
+            Add Item ➕
+          </button>
           <p id="tracker-msg" class="success-msg"></p>
         </div>
 
         <!-- Tracked Items -->
-        <div class="card">
-          <h3>Your Grocery List</h3>
+        <div class="tracker-items-card">
+
+          <!-- Sort Controls -->
+          <div class="tracker-controls">
+            <h3>🛒 Your Grocery List</h3>
+            <div class="tracker-sort">
+              <button class="btn-sort active" id="sort-soonest"
+                onclick="sortItems('soonest')">
+                ⚡ Expiring Soon
+              </button>
+              <button class="btn-sort" id="sort-latest"
+                onclick="sortItems('latest')">
+                📅 Latest First
+              </button>
+            </div>
+          </div>
+
+          <!-- Expiry Summary -->
+          <div class="expiry-summary" id="expiry-summary"></div>
+
+          <!-- Items List -->
           <div id="tracker-items-list">
             <p class="empty-msg">No items added yet.</p>
           </div>

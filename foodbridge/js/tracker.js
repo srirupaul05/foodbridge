@@ -1,27 +1,78 @@
 // ============================================
 //  FOODBRIDGE — tracker.js
-//  Expiry tracker for groceries
+//  Expiry tracker with notifications & sorting
 // ============================================
 
-import { auth, db } from './firebase-config.js';
+import { db } from './firebase-config.js';
 import {
   collection,
   addDoc,
-  query,
-  orderBy,
-  onSnapshot,
-  doc,
+  getDocs,
   deleteDoc,
+  doc,
+  query,
+  where,
+  orderBy,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+// ---- Global state ----
+let allTrackerItems = [];
+let currentSort     = 'soonest';
+
+// ---- Category emojis ----
+const categoryEmojis = {
+  dairy:      '🥛',
+  vegetables: '🥦',
+  fruits:     '🍎',
+  meat:       '🍗',
+  bakery:     '🍞',
+  packaged:   '📦',
+  leftovers:  '🍲',
+  other:      '📋'
+};
+
 // ============================================
-//  ADD TRACKER ITEM — Save grocery item
+//  LOAD TRACKER ITEMS
+// ============================================
+window.loadTrackerItems = async function() {
+  if (!window.currentUser) return;
+
+  const listEl = document.getElementById('tracker-items-list');
+  if (!listEl) return;
+
+  listEl.innerHTML = '<p class="empty-msg">⏳ Loading items...</p>';
+
+  try {
+    const q = query(
+      collection(db, 'tracker', window.currentUser.uid, 'items'),
+      orderBy('expiryDate', 'asc')
+    );
+
+    const snapshot = await getDocs(q);
+    allTrackerItems = [];
+
+    snapshot.forEach(docSnap => {
+      allTrackerItems.push({ id: docSnap.id, ...docSnap.data() });
+    });
+
+    renderTrackerItems(allTrackerItems);
+    updateExpirySummary(allTrackerItems);
+    showExpiryNotifications(allTrackerItems);
+
+  } catch (e) {
+    listEl.innerHTML =
+      '<p class="empty-msg">Could not load items.</p>';
+    console.error('Tracker load error:', e);
+  }
+};
+
+// ============================================
+//  ADD TRACKER ITEM
 // ============================================
 window.addTrackerItem = async function() {
-  // Must be logged in
   if (!window.currentUser) {
-    alert('Please login to use the expiry tracker!');
+    alert('Please login to use the tracker!');
     showPage('auth');
     return;
   }
@@ -29,10 +80,11 @@ window.addTrackerItem = async function() {
   const name     = document.getElementById('item-name').value.trim();
   const quantity = document.getElementById('item-quantity').value;
   const unit     = document.getElementById('item-unit').value.trim();
+  const category = document.getElementById('item-category').value;
   const expiry   = document.getElementById('item-expiry').value;
   const msgEl    = document.getElementById('tracker-msg');
 
-  // --- Validation ---
+  // Validation
   if (!name) {
     msgEl.style.color = '#e63946';
     msgEl.textContent = '⚠️ Please enter item name.';
@@ -44,179 +96,153 @@ window.addTrackerItem = async function() {
     return;
   }
 
+  // Check expiry not in past
+  const expiryDate = new Date(expiry);
+  const today      = new Date();
+  today.setHours(0, 0, 0, 0);
+
   msgEl.style.color = 'var(--green)';
   msgEl.textContent = '⏳ Adding item...';
 
   try {
-    // Save to Firestore under user's tracker collection
     await addDoc(
       collection(db, 'tracker', window.currentUser.uid, 'items'),
       {
-        name:      name,
-        quantity:  quantity || '1',
-        unit:      unit || 'pcs',
-        expiryDate: new Date(expiry),
-        addedAt:   serverTimestamp()
+        name:        name,
+        quantity:    parseFloat(quantity) || 1,
+        unit:        unit || 'pcs',
+        category:    category || 'other',
+        expiryDate:  expiryDate,
+        addedAt:     serverTimestamp()
       }
     );
 
-    msgEl.textContent = '✅ Item added successfully!';
+    msgEl.textContent = '✅ Item added!';
 
     // Clear form
     document.getElementById('item-name').value     = '';
     document.getElementById('item-quantity').value = '';
     document.getElementById('item-unit').value     = '';
+    document.getElementById('item-category').value = '';
     document.getElementById('item-expiry').value   = '';
+
+    // Reload items
+    await loadTrackerItems();
 
     setTimeout(() => { msgEl.textContent = ''; }, 2000);
 
-  } catch (error) {
+  } catch (e) {
     msgEl.style.color = '#e63946';
-    msgEl.textContent = '⚠️ Error adding item. Try again.';
-    console.error('Tracker add error:', error);
+    msgEl.textContent = '⚠️ Could not add item.';
+    console.error(e);
   }
 };
 
 // ============================================
-//  LOAD TRACKER ITEMS — Show grocery list
+//  RENDER TRACKER ITEMS
 // ============================================
-window.loadTrackerItems = function() {
-  if (!window.currentUser) return;
-
+function renderTrackerItems(items) {
   const listEl = document.getElementById('tracker-items-list');
   if (!listEl) return;
 
-  listEl.innerHTML = '<p class="empty-msg">⏳ Loading your items...</p>';
-
-  const q = query(
-    collection(db, 'tracker', window.currentUser.uid, 'items'),
-    orderBy('expiryDate', 'asc')
-  );
-
-  onSnapshot(q, (snapshot) => {
-    if (snapshot.empty) {
-      listEl.innerHTML = `
-        <p class="empty-msg">
-          No items yet. Add your groceries above! 👆
-        </p>`;
-      return;
-    }
-
-    // Build summary counts
-    let expiredCount  = 0;
-    let urgentCount   = 0;
-    let freshCount    = 0;
-    const items       = [];
-
-    snapshot.forEach(docSnap => {
-      const data = { id: docSnap.id, ...docSnap.data() };
-      items.push(data);
-
-      const daysLeft = getDaysLeft(data.expiryDate?.toDate());
-      if (daysLeft < 0)       expiredCount++;
-      else if (daysLeft <= 3) urgentCount++;
-      else                    freshCount++;
-    });
-
-    // Build HTML
-    listEl.innerHTML = '';
-
-    // Summary pills
-    const summary = document.createElement('div');
-    summary.className = 'tracker-summary';
-    summary.innerHTML = `
-      <span class="summary-pill pill-all">
-        All (${items.length})
-      </span>
-      ${urgentCount > 0 ? `
-      <span class="summary-pill pill-urgent">
-        ⚡ Urgent (${urgentCount + expiredCount})
-      </span>` : ''}
-      <span class="summary-pill pill-fresh">
-        ✅ Fresh (${freshCount})
-      </span>
-    `;
-    listEl.appendChild(summary);
-
-    // Tip box
-    if (urgentCount > 0 || expiredCount > 0) {
-      const tip = document.createElement('div');
-      tip.className = 'tip-box';
-      tip.innerHTML = `
-        <p>
-          💡 <strong>Tip:</strong> You have
-          ${urgentCount + expiredCount} item(s) expiring soon!
-          Click <strong>"Donate Now"</strong> to post them
-          as a food listing and help someone in need.
-        </p>`;
-      listEl.appendChild(tip);
-    }
-
-    // Render each item
-    items.forEach(item => {
-      listEl.appendChild(createTrackerCard(item));
-    });
-  });
-};
-
-// ============================================
-//  CREATE TRACKER CARD — Build item card
-// ============================================
-function createTrackerCard(data) {
-  const div      = document.createElement('div');
-  const expiry   = data.expiryDate?.toDate();
-  const daysLeft = getDaysLeft(expiry);
-
-  // Set card class based on urgency
-  let cardClass = 'tracker-item ';
-  let daysLabel = '';
-  let daysClass = '';
-  let icon      = getFoodIcon(data.name);
-
-  if (daysLeft < 0) {
-    cardClass += 'expired';
-    daysLabel  = 'Expired!';
-    daysClass  = 'days-expired';
-  } else if (daysLeft === 0) {
-    cardClass += 'expiring-today';
-    daysLabel  = 'Expires Today!';
-    daysClass  = 'days-today';
-  } else if (daysLeft <= 3) {
-    cardClass += 'expiring-soon';
-    daysLabel  = `${daysLeft} day(s) left`;
-    daysClass  = 'days-soon';
-  } else {
-    cardClass += 'fresh';
-    daysLabel  = `${daysLeft} days left`;
-    daysClass  = 'days-fresh';
+  if (items.length === 0) {
+    listEl.innerHTML = `
+      <div style="text-align:center; padding:40px 20px;">
+        <p style="font-size:3rem">🛒</p>
+        <p style="color:var(--gray)">
+          No items yet. Add your groceries!
+        </p>
+      </div>`;
+    return;
   }
 
-  // Show donate button if expiring within 3 days
-  const donateBtn = daysLeft <= 3
-    ? `<button
-        class="btn-donate-now"
-        onclick="quickDonate('${data.name}', '${data.quantity}', '${data.unit}')">
-        Donate Now 🍱
-       </button>`
-    : '';
+  // Sort items
+  const sorted = [...items].sort((a, b) => {
+    const dateA = getExpiryDate(a);
+    const dateB = getExpiryDate(b);
+    return currentSort === 'soonest'
+      ? dateA - dateB
+      : dateB - dateA;
+  });
 
-  div.className = cardClass;
+  listEl.innerHTML = '';
+  sorted.forEach(item => {
+    listEl.appendChild(createTrackerCard(item));
+  });
+}
+
+// ============================================
+//  CREATE TRACKER CARD
+// ============================================
+function createTrackerCard(item) {
+  const div        = document.createElement('div');
+  const expiryDate = getExpiryDate(item);
+  const now        = new Date();
+  now.setHours(0, 0, 0, 0);
+
+  const daysLeft   = Math.ceil(
+    (expiryDate - now) / (1000 * 60 * 60 * 24)
+  );
+
+  // Determine status
+  let status, daysText, freshnessWidth;
+
+  if (daysLeft < 0) {
+    status         = 'expired';
+    daysText       = `Expired ${Math.abs(daysLeft)} days ago`;
+    freshnessWidth = 100;
+  } else if (daysLeft === 0) {
+    status         = 'urgent';
+    daysText       = '⚡ Expires TODAY!';
+    freshnessWidth = 95;
+  } else if (daysLeft <= 2) {
+    status         = 'urgent';
+    daysText       = `🔴 ${daysLeft} day${daysLeft > 1 ? 's' : ''} left`;
+    freshnessWidth = 75;
+  } else if (daysLeft <= 5) {
+    status         = 'warning';
+    daysText       = `⚠️ ${daysLeft} days left`;
+    freshnessWidth = 50;
+  } else {
+    status         = 'fresh';
+    daysText       = `✅ ${daysLeft} days left`;
+    freshnessWidth = Math.max(10, 100 - (daysLeft * 3));
+  }
+
+  const emoji = categoryEmojis[item.category] || '📋';
+
+  div.className = `tracker-item ${status}`;
   div.innerHTML = `
-    <div class="tracker-item-icon">${icon}</div>
+    <div class="item-emoji">${emoji}</div>
 
-    <div class="tracker-item-info">
-      <h4>${data.name}</h4>
-      <p>📦 ${data.quantity} ${data.unit}</p>
-      <p>📅 Expires: ${formatDate(expiry)}</p>
+    <div class="item-info">
+      <h4>${item.name}</h4>
+      <p class="item-meta">
+        ${item.quantity} ${item.unit}
+        ${item.category ? `• ${item.category}` : ''}
+      </p>
+      <div class="freshness-bar">
+        <div class="freshness-fill"
+             style="width:${freshnessWidth}%"></div>
+      </div>
+      <span class="days-left">${daysText}</span>
     </div>
 
-    <div class="tracker-item-actions">
-      <span class="days-left ${daysClass}">${daysLabel}</span>
-      ${donateBtn}
+    <div class="item-actions">
+      ${daysLeft <= 3 ? `
       <button
-        class="btn-remove-item"
-        onclick="removeTrackerItem('${data.id}')">
-        🗑️
+        class="btn-donate-item"
+        onclick="donateTrackerItem(
+          '${item.name}',
+          '${item.quantity}',
+          '${item.unit}',
+          '${item.category}')">
+        🍱 Donate
+      </button>` : ''}
+      <button
+        class="btn-delete-item"
+        onclick="deleteTrackerItem('${item.id}')">
+        🗑️ Remove
       </button>
     </div>
   `;
@@ -225,89 +251,208 @@ function createTrackerCard(data) {
 }
 
 // ============================================
-//  REMOVE TRACKER ITEM
+//  DELETE TRACKER ITEM
 // ============================================
-window.removeTrackerItem = async function(itemId) {
-  if (!window.currentUser) return;
-  if (!confirm('Remove this item from your tracker?')) return;
-
+window.deleteTrackerItem = async function(itemId) {
+  if (!confirm('Remove this item?')) return;
   try {
     await deleteDoc(
       doc(db, 'tracker', window.currentUser.uid, 'items', itemId)
     );
-  } catch (error) {
-    console.error('Remove tracker item error:', error);
-    alert('Could not remove item. Please try again.');
+    await loadTrackerItems();
+  } catch (e) {
+    alert('Could not remove item.');
+    console.error(e);
   }
 };
 
 // ============================================
-//  QUICK DONATE — Jump to donor form
-//  Pre-fills the form with tracker item data
+//  DONATE TRACKER ITEM — Pre-fill donor form
 // ============================================
-window.quickDonate = function(name, quantity, unit) {
+window.donateTrackerItem = function(name, quantity, unit, category) {
+  // Switch to donor page
   showPage('donor');
 
-  // Pre-fill donor form
+  // Pre-fill the form
   setTimeout(() => {
-    const nameEl  = document.getElementById('food-name');
-    const qtyEl   = document.getElementById('food-quantity');
-    const unitEl  = document.getElementById('food-unit');
-    const msgEl   = document.getElementById('donor-msg');
+    const nameEl     = document.getElementById('food-name');
+    const quantityEl = document.getElementById('food-quantity');
+    const unitEl     = document.getElementById('food-unit');
+    const categoryEl = document.getElementById('food-category');
 
-    if (nameEl)  nameEl.value  = name;
-    if (qtyEl)   qtyEl.value   = quantity;
-    if (unitEl)  unitEl.value  = unit;
-    if (msgEl) {
-      msgEl.style.color = 'var(--green)';
-      msgEl.textContent =
-        '✅ Form pre-filled from your tracker! Add more details and post.';
+    if (nameEl)     nameEl.value     = name;
+    if (quantityEl) quantityEl.value = quantity;
+    if (unitEl)     unitEl.value     = unit;
+
+    // Match category
+    const categoryMap = {
+      dairy:      'dairy',
+      vegetables: 'veg',
+      fruits:     'fruits',
+      meat:       'nonveg',
+      bakery:     'bakery',
+      packaged:   'packaged',
+      leftovers:  'cooked'
+    };
+    if (categoryEl && categoryMap[category]) {
+      categoryEl.value = categoryMap[category];
     }
 
     // Scroll to form
     document.getElementById('donor-form-card')
       ?.scrollIntoView({ behavior: 'smooth' });
+
+    // Show hint
+    const msgEl = document.getElementById('donor-msg');
+    if (msgEl) {
+      msgEl.style.color = 'var(--green)';
+      msgEl.textContent =
+        '✅ Form pre-filled from your expiry tracker!';
+    }
   }, 300);
 };
 
 // ============================================
-//  HELPER — Get days left until expiry
+//  SORT ITEMS
 // ============================================
-function getDaysLeft(date) {
-  if (!date) return 999;
-  const now      = new Date();
-  now.setHours(0, 0, 0, 0);
-  const expDate  = new Date(date);
-  expDate.setHours(0, 0, 0, 0);
-  return Math.ceil((expDate - now) / (1000 * 60 * 60 * 24));
-}
+window.sortItems = function(sort) {
+  currentSort = sort;
 
-// ============================================
-//  HELPER — Format date
-// ============================================
-function formatDate(date) {
-  if (!date) return 'Unknown';
-  return date.toLocaleDateString('en-IN', {
-    day:   'numeric',
-    month: 'short',
-    year:  'numeric'
+  // Update button styles
+  document.querySelectorAll('.btn-sort').forEach(btn => {
+    btn.classList.remove('active');
   });
+
+  if (sort === 'soonest') {
+    document.getElementById('sort-soonest')
+      ?.classList.add('active');
+  } else {
+    document.getElementById('sort-latest')
+      ?.classList.add('active');
+  }
+
+  renderTrackerItems(allTrackerItems);
+};
+
+// ============================================
+//  EXPIRY SUMMARY
+// ============================================
+function updateExpirySummary(items) {
+  const summaryEl = document.getElementById('expiry-summary');
+  if (!summaryEl) return;
+
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+
+  let expired = 0, urgent = 0, fresh = 0;
+
+  items.forEach(item => {
+    const expiryDate = getExpiryDate(item);
+    const daysLeft   = Math.ceil(
+      (expiryDate - now) / (1000 * 60 * 60 * 24)
+    );
+
+    if (daysLeft < 0)      expired++;
+    else if (daysLeft <= 3) urgent++;
+    else                    fresh++;
+  });
+
+  summaryEl.innerHTML = `
+    ${expired > 0 ? `
+    <span class="summary-badge expired">
+      ❌ ${expired} Expired
+    </span>` : ''}
+    ${urgent > 0 ? `
+    <span class="summary-badge urgent">
+      ⚠️ ${urgent} Expiring Soon
+    </span>` : ''}
+    ${fresh > 0 ? `
+    <span class="summary-badge fresh">
+      ✅ ${fresh} Fresh
+    </span>` : ''}
+    ${items.length === 0 ? `
+    <span style="color:var(--gray);font-size:0.85rem">
+      No items tracked yet
+    </span>` : ''}
+  `;
 }
 
 // ============================================
-//  HELPER — Get food icon by name
+//  SHOW EXPIRY NOTIFICATIONS
 // ============================================
-function getFoodIcon(name) {
-  const n = name.toLowerCase();
-  if (n.includes('milk') || n.includes('dairy'))  return '🥛';
-  if (n.includes('bread') || n.includes('roti'))  return '🍞';
-  if (n.includes('rice'))                         return '🍚';
-  if (n.includes('egg'))                          return '🥚';
-  if (n.includes('fruit') || n.includes('apple')) return '🍎';
-  if (n.includes('veg') || n.includes('sabzi'))   return '🥦';
-  if (n.includes('chicken') || n.includes('meat'))return '🍗';
-  if (n.includes('fish'))                         return '🐟';
-  if (n.includes('dal') || n.includes('lentil'))  return '🫘';
-  if (n.includes('oil'))                          return '🫙';
-  return '🥫';
+function showExpiryNotifications(items) {
+  const banner  = document.getElementById('tracker-notif-banner');
+  const textEl  = document.getElementById('tracker-notif-text');
+  if (!banner || !textEl) return;
+
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+
+  let expiredItems  = [];
+  let urgentItems   = [];
+
+  items.forEach(item => {
+    const expiryDate = getExpiryDate(item);
+    const daysLeft   = Math.ceil(
+      (expiryDate - now) / (1000 * 60 * 60 * 24)
+    );
+
+    if (daysLeft < 0)      expiredItems.push(item.name);
+    else if (daysLeft <= 2) urgentItems.push(item.name);
+  });
+
+  if (expiredItems.length > 0) {
+    banner.classList.remove('hidden');
+    banner.classList.add('danger');
+    textEl.textContent =
+      `❌ Expired: ${expiredItems.join(', ')} — Please remove or donate!`;
+  } else if (urgentItems.length > 0) {
+    banner.classList.remove('hidden');
+    banner.classList.remove('danger');
+    textEl.textContent =
+      `⚠️ Expiring soon: ${urgentItems.join(', ')} — Consider donating!`;
+  } else {
+    banner.classList.add('hidden');
+  }
+
+  // Browser notification
+  if (
+    (expiredItems.length > 0 || urgentItems.length > 0) &&
+    'Notification' in window &&
+    Notification.permission === 'granted'
+  ) {
+    new Notification('🌱 FoodBridge Expiry Alert!', {
+      body: expiredItems.length > 0
+        ? `${expiredItems[0]} has expired!`
+        : `${urgentItems[0]} expires soon!`,
+      icon: '/assets/images/icon.png'
+    });
+  }
+
+  // Request notification permission
+  if (
+    (expiredItems.length > 0 || urgentItems.length > 0) &&
+    'Notification' in window &&
+    Notification.permission === 'default'
+  ) {
+    Notification.requestPermission();
+  }
+}
+
+// ============================================
+//  DISMISS BANNER
+// ============================================
+window.dismissTrackerBanner = function() {
+  const banner = document.getElementById('tracker-notif-banner');
+  if (banner) banner.classList.add('hidden');
+};
+
+// ============================================
+//  HELPER — Get expiry date from item
+// ============================================
+function getExpiryDate(item) {
+  if (item.expiryDate?.toDate) {
+    return item.expiryDate.toDate();
+  }
+  return new Date(item.expiryDate);
 }
