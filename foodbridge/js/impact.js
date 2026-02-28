@@ -242,7 +242,16 @@ window.loadLeaderboard = async function() {
       limit(10)
     );
 
-    const snapshot = await getDocs(q);
+   const snapshot = await getDocs(
+    query(collection(db, 'userStats'), orderBy('totalMeals', 'desc'), limit(10))
+  );
+
+  // Get user names from users collection
+  const userNames = {};
+  const usersSnap = await getDocs(collection(db, 'users'));
+  usersSnap.forEach(d => {
+    userNames[d.id] = d.data().name || 'Anonymous';
+  });
 
     if (snapshot.empty) {
       listEl.innerHTML =
@@ -254,7 +263,7 @@ window.loadLeaderboard = async function() {
     let rank = 1;
 
     // Get names for each user
-    const promises = snapshot.docs.map(async (docSnap) => {
+      const promises = snapshot.docs.map(async (docSnap) => {
       const stats  = docSnap.data();
       const userId = docSnap.id;
 

@@ -280,3 +280,11 @@ tr:hover td {
     grid-template-columns: 1fr;
   }
 }
+
+#page-admin {
+  display: none !important;
+}
+
+#page-admin.admin-visible {
+  display: block !important;
+}

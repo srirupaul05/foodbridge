@@ -10,6 +10,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+const ADMIN_EMAILS = [
+  'paulsrirup2005@gmail.com',
+  'srirupaul14@gmail.com'
+];
+
 // ---- All page IDs ----
 const pages = ['home', 'auth', 'donor', 'recipient', 'tracker', 'impact'];
 
@@ -31,12 +36,16 @@ window.currentUserData = null;
   });
 
   // Show selected page
-  const target = document.getElementById(`page-${pageName}`);
-  if (target) {
-    target.classList.remove('hidden');
-    target.classList.add('active');
+  const activePage = document.getElementById(`page-${pageName}`);
+  if (activePage) {
+    // Extra protection for admin page
+    if (pageName === 'admin') {
+      const isAdmin = ADMIN_EMAILS?.includes(window.currentUser?.email);
+      if (!isAdmin) return;
+    }
+    activePage.classList.remove('hidden');
+    activePage.classList.add('active');
   }
-
   // Update active nav link
   document.querySelectorAll('.nav-links a').forEach(link => {
     link.classList.remove('active-link');
