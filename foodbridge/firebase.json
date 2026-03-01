@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "nourishh",
     "public": ".",
     "ignore": [
       "firebase.json",
