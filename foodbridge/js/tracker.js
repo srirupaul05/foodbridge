@@ -421,7 +421,7 @@ function showExpiryNotifications(items) {
     'Notification' in window &&
     Notification.permission === 'granted'
   ) {
-    new Notification('🌱 nourishh Expiry Alert!', {
+    new Notification('🍃 nourishh Expiry Alert!', {
       body: expiredItems.length > 0
         ? `${expiredItems[0]} has expired!`
         : `${urgentItems[0]} expires soon!`,

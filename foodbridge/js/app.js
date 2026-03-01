@@ -208,7 +208,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
   showPage('home');
-  console.log('🌱 nourishh loaded!');
+  console.log('🍃 nourishh loaded!');
 });
 
 // ============================================

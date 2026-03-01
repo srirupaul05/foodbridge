@@ -97,7 +97,7 @@ async function ensureChatExists(chatId, title) {
 
       // Add system welcome message
       await addDoc(collection(db, 'chats', chatId, 'messages'), {
-        text:       '🌱 Chat started! Coordinate your food pickup here.',
+        text:       '🍃 Chat started! Coordinate your food pickup here.',
         senderId:   'system',
         senderName: 'Nourishh ',
         sentAt:     serverTimestamp(),

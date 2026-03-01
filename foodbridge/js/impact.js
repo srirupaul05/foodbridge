@@ -14,7 +14,7 @@ const GOALS = { meals: 50, kg: 25, co2: 50, water: 500 };
 
 // ---- All badges ----
 const ALL_BADGES = [
-  { id: 'first_donation', emoji: '🌱', name: 'First Step',    desc: 'Made your first donation',     req: 1,   stat: 'donations' },
+  { id: 'first_donation', emoji: '🍃', name: 'First Step',    desc: 'Made your first donation',     req: 1,   stat: 'donations' },
   { id: 'five_donations', emoji: '🍱', name: 'Food Hero',     desc: '5 donations made',             req: 5,   stat: 'donations' },
   { id: 'ten_donations',  emoji: '🏆', name: 'Champion',      desc: '10 donations made',            req: 10,  stat: 'donations' },
   { id: 'kg_10',          emoji: '📦', name: 'Rescue Rookie', desc: 'Rescued 10kg of food',         req: 10,  stat: 'totalKg'   },
@@ -134,7 +134,7 @@ function updateCO2Visual() {
   else if (co2 >= 50)  tree.textContent = '🌲';
   else if (co2 >= 20)  tree.textContent = '🌿';
   else if (co2 >= 5)   tree.textContent = '🪴';
-  else                 tree.textContent = '🌱';
+  else                 tree.textContent = '🍃';
 
   // Bar fill
   const pct = Math.min((co2 / 100) * 100, 100);
@@ -271,7 +271,7 @@ window.closeShareModal = function() {
 };
 
 window.copyShareText = function() {
-  const text = `🌱 My nourishh Impact:\n🍽️ ${myStats.meals} meals provided\n📦 ${myStats.kg}kg food rescued\n🌿 ${myStats.co2}kg CO₂ avoided\n💧 ${myStats.water}L water saved\n\nJoin me at Nourishh !`;
+  const text = `🍃 My nourishh Impact:\n🍽️ ${myStats.meals} meals provided\n📦 ${myStats.kg}kg food rescued\n🌿 ${myStats.co2}kg CO₂ avoided\n💧 ${myStats.water}L water saved\n\nJoin me at Nourishh !`;
   navigator.clipboard.writeText(text).then(() => {
     alert('✅ Copied to clipboard!');
   });
@@ -285,7 +285,7 @@ function showGuestState() {
   if (body) {
     body.innerHTML = `
       <div style="text-align:center;padding:80px 20px">
-        <p style="font-size:4rem;margin-bottom:16px">🌱</p>
+        <p style="font-size:4rem;margin-bottom:16px">🍃</p>
         <h2 style="font-family:'Playfair Display',serif;
           color:#1b2d1f;margin-bottom:12px">
           Start Your Impact Journey
