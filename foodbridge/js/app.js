@@ -57,6 +57,61 @@ window.currentUser = null;
 window.currentUserData = null;
 
 // ============================================
+//  CONFETTI — celebrate first donation!
+// ============================================
+window.showConfetti = function() {
+  const colors = ['#2d6a4f','#52b788','#f9c784',
+                  '#f4845f','#95d5b2','#ffffff'];
+  const container = document.createElement('div');
+  container.style.cssText = `
+    position:fixed;inset:0;
+    pointer-events:none;z-index:9999;
+    overflow:hidden;
+  `;
+  document.body.appendChild(container);
+
+  for (let i = 0; i < 120; i++) {
+    const piece = document.createElement('div');
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const size  = Math.random() * 10 + 6;
+    const left  = Math.random() * 100;
+    const delay = Math.random() * 1.2;
+    const duration = Math.random() * 2 + 2;
+    const isCircle = Math.random() > 0.5;
+
+    piece.style.cssText = `
+      position:absolute;
+      top:-20px;
+      left:${left}%;
+      width:${size}px;
+      height:${size}px;
+      background:${color};
+      border-radius:${isCircle ? '50%' : '2px'};
+      animation:confettiFall ${duration}s ${delay}s ease-in forwards;
+      transform:rotate(${Math.random()*360}deg);
+      opacity:0.9;
+    `;
+    container.appendChild(piece);
+  }
+
+  // Add keyframes
+  if (!document.getElementById('confetti-style')) {
+    const style = document.createElement('style');
+    style.id = 'confetti-style';
+    style.textContent = `
+      @keyframes confettiFall {
+        0%   { transform: translateY(0) rotate(0deg);   opacity: 0.9; }
+        100% { transform: translateY(105vh) rotate(720deg); opacity: 0; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // Remove after animation
+  setTimeout(() => container.remove(), 4500);
+};
+
+// ============================================
 //  MOBILE NAV TOGGLE
 // ============================================
 window.toggleMobileNav = function() {

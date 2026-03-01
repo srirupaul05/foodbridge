@@ -313,7 +313,9 @@ if (!location) {
 
     // Show success
     msgEl.style.color = 'var(--green)';
-    msgEl.textContent = '✅ Food posted successfully! Thank you!';
+    msgEl.textContent = '✅ Food posted successfully!';
+    showConfetti();
+    showToast('Food posted! You\'re making a difference 🌍', 'success', 5000);
 
     // Clear form and photo
     clearDonorForm();
