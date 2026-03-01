@@ -57,6 +57,26 @@ window.currentUser = null;
 window.currentUserData = null;
 
 // ============================================
+//  MOBILE NAV TOGGLE
+// ============================================
+window.toggleMobileNav = function() {
+  const links    = document.getElementById('navLinks');
+  const hamburger = document.getElementById('nav-hamburger');
+  links?.classList.toggle('mobile-open');
+  hamburger?.classList.toggle('open');
+};
+
+// Close mobile nav when a link is clicked
+document.addEventListener('click', function(e) {
+  if (e.target.closest('.nav-links a')) {
+    const links     = document.getElementById('navLinks');
+    const hamburger = document.getElementById('nav-hamburger');
+    links?.classList.remove('mobile-open');
+    hamburger?.classList.remove('open');
+  }
+});
+
+// ============================================
 //  SHOW PAGE — switches between pages
 // ============================================
   window.showPage = function(pageName) {
