@@ -379,47 +379,208 @@
 
   <!-- ===== IMPACT PAGE ===== -->
   <div id="page-impact" class="page">
-    <div class="page-container">
-      <h1 class="page-title">🌍 Your Impact</h1>
-      <p class="page-subtitle">See the difference you're making in the world</p>
 
-      <!-- Personal Impact -->
-      <div class="impact-grid">
-        <div class="impact-card green">
-          <div class="impact-icon">🍽️</div>
-          <h2 id="my-meals">0</h2>
-          <p>Meals Provided</p>
+    <!-- Hero Banner -->
+    <div class="impact-hero">
+      <div class="impact-hero-label">🌱 Your Environmental Impact</div>
+      <h1>You're changing<br/><span>the world</span></h1>
+      <p class="impact-hero-sub">Every donation you make creates real, measurable impact</p>
+      <button class="btn-share-impact" onclick="openShareModal()">
+        🔗 Share My Impact
+      </button>
+    </div>
+
+    <div class="impact-body">
+
+      <!-- Stat Rings -->
+      <div class="impact-rings-grid">
+
+        <div class="impact-ring-card green">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 100 100">
+              <circle class="ring-bg" cx="50" cy="50" r="45"/>
+              <circle class="ring-fill green" cx="50" cy="50" r="45"
+                id="ring-meals"/>
+            </svg>
+            <div class="ring-center">
+              <span class="ring-value" id="my-meals">0</span>
+              <span class="ring-unit">meals</span>
+            </div>
+          </div>
+          <div class="ring-label">Meals Provided</div>
+          <div class="ring-sublabel">Fed to people in need</div>
         </div>
-        <div class="impact-card blue">
-          <div class="impact-icon">♻️</div>
-          <h2 id="my-kg">0</h2>
-          <p>KG Food Rescued</p>
+
+        <div class="impact-ring-card blue">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 100 100">
+              <circle class="ring-bg" cx="50" cy="50" r="45"/>
+              <circle class="ring-fill blue" cx="50" cy="50" r="45"
+                id="ring-kg"/>
+            </svg>
+            <div class="ring-center">
+              <span class="ring-value" id="my-kg">0</span>
+              <span class="ring-unit">kg</span>
+            </div>
+          </div>
+          <div class="ring-label">Food Rescued</div>
+          <div class="ring-sublabel">Saved from landfill</div>
         </div>
-        <div class="impact-card orange">
-          <div class="impact-icon">🌿</div>
-          <h2 id="my-co2">0</h2>
-          <p>KG CO₂ Avoided</p>
+
+        <div class="impact-ring-card orange">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 100 100">
+              <circle class="ring-bg" cx="50" cy="50" r="45"/>
+              <circle class="ring-fill orange" cx="50" cy="50" r="45"
+                id="ring-co2"/>
+            </svg>
+            <div class="ring-center">
+              <span class="ring-value" id="my-co2">0</span>
+              <span class="ring-unit">kg CO₂</span>
+            </div>
+          </div>
+          <div class="ring-label">CO₂ Avoided</div>
+          <div class="ring-sublabel">Carbon footprint saved</div>
         </div>
-        <div class="impact-card teal">
-          <div class="impact-icon">💧</div>
-          <h2 id="my-water">0</h2>
-          <p>Litres Water Saved</p>
+
+        <div class="impact-ring-card teal">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 100 100">
+              <circle class="ring-bg" cx="50" cy="50" r="45"/>
+              <circle class="ring-fill teal" cx="50" cy="50" r="45"
+                id="ring-water"/>
+            </svg>
+            <div class="ring-center">
+              <span class="ring-value" id="my-water">0</span>
+              <span class="ring-unit">litres</span>
+            </div>
+          </div>
+          <div class="ring-label">Water Saved</div>
+          <div class="ring-sublabel">Virtual water footprint</div>
+        </div>
+
+      </div>
+
+      <!-- Two Column: CO2 + Progress -->
+      <div class="impact-two-col">
+
+        <!-- CO2 Visualization -->
+        <div class="impact-card">
+          <div class="impact-card-title">🌿 Carbon Footprint</div>
+
+          <div class="co2-visual">
+            <div class="tree-container">
+              <span class="tree-emoji" id="impact-tree">🌱</span>
+            </div>
+
+            <div class="co2-bar-wrap">
+              <div class="co2-bar-fill" id="co2-bar"></div>
+            </div>
+            <div class="co2-stats">
+              <span>0 kg</span>
+              <span id="co2-target-label">Goal: 50 kg</span>
+            </div>
+
+            <div class="co2-equivalent" id="co2-equivalent">
+              🌍 Start donating to see your carbon impact!
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Bars -->
+        <div class="impact-card">
+          <div class="impact-card-title">📊 Progress Overview</div>
+
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label">🍽️ Meals Goal</span>
+              <span class="progress-value" id="prog-meals-val">0 / 50</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill green" id="prog-meals"></div>
+            </div>
+          </div>
+
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label">📦 KG Rescued Goal</span>
+              <span class="progress-value" id="prog-kg-val">0 / 25</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill blue" id="prog-kg"></div>
+            </div>
+          </div>
+
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label">🌿 CO₂ Goal</span>
+              <span class="progress-value" id="prog-co2-val">0 / 50</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill orange" id="prog-co2"></div>
+            </div>
+          </div>
+
+          <div class="progress-item">
+            <div class="progress-header">
+              <span class="progress-label">💧 Water Goal</span>
+              <span class="progress-value" id="prog-water-val">0 / 500</span>
+            </div>
+            <div class="progress-bar-wrap">
+              <div class="progress-bar-fill teal" id="prog-water"></div>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Badges -->
-      <div class="card badges-card">
-        <h3>🏆 Your Badges</h3>
-        <div id="badges-container" class="badges-grid"></div>
+      <div class="impact-card" style="margin-bottom:24px">
+        <div class="impact-card-title">🏆 Achievements</div>
+        <div class="badges-grid-new" id="badges-container"></div>
       </div>
 
       <!-- Leaderboard -->
-      <div class="card">
-        <h3>🏅 Community Leaderboard</h3>
-        <div id="leaderboard-list" class="leaderboard"></div>
+      <div class="impact-card">
+        <div class="impact-card-title">🏅 Community Leaderboard</div>
+        <div class="leaderboard-new" id="leaderboard-list"></div>
       </div>
 
     </div>
+
+    <!-- Share Modal -->
+    <div id="share-modal" class="share-modal hidden">
+      <div class="share-card">
+        <h2>My FoodBridge Impact 🌱</h2>
+        <p>Here's the difference I've made so far</p>
+        <div class="share-stats">
+          <div class="share-stat">
+            <div class="share-stat-value" id="share-meals">0</div>
+            <div class="share-stat-label">Meals Provided</div>
+          </div>
+          <div class="share-stat">
+            <div class="share-stat-value" id="share-kg">0</div>
+            <div class="share-stat-label">KG Rescued</div>
+          </div>
+          <div class="share-stat">
+            <div class="share-stat-value" id="share-co2">0</div>
+            <div class="share-stat-label">KG CO₂ Saved</div>
+          </div>
+          <div class="share-stat">
+            <div class="share-stat-value" id="share-water">0</div>
+            <div class="share-stat-label">Litres Water Saved</div>
+          </div>
+        </div>
+        <div class="share-actions">
+          <button class="btn-copy-share" onclick="copyShareText()">
+            📋 Copy Stats
+          </button>
+          <button class="btn-close-share" onclick="closeShareModal()">
+            ✕ Close
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   

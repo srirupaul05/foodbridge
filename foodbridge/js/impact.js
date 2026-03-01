@@ -1,94 +1,39 @@
 // ============================================
 //  FOODBRIDGE — impact.js
-//  Impact dashboard, badges & leaderboard
+//  Impact page with rings, CO2, badges, share
 // ============================================
 
-import { auth, db } from './firebase-config.js';
+import { db } from './firebase-config.js';
 import {
-  doc,
-  getDoc,
-  collection,
-  query,
-  orderBy,
-  limit,
-  getDocs
+  doc, getDoc, collection,
+  getDocs, query, orderBy, limit
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-// ============================================
-//  ALL BADGES DEFINITION
-// ============================================
+// ---- Goals ----
+const GOALS = { meals: 50, kg: 25, co2: 50, water: 500 };
+
+// ---- All badges ----
 const ALL_BADGES = [
-  {
-    id:        'first_donation',
-    icon:      '🌱',
-    name:      'First Step',
-    desc:      'Make your first donation',
-    condition: (stats) => stats.donations >= 1
-  },
-  {
-    id:        'five_donations',
-    icon:      '⭐',
-    name:      'Rising Star',
-    desc:      '5 donations made',
-    condition: (stats) => stats.donations >= 5
-  },
-  {
-    id:        'ten_donations',
-    icon:      '🔥',
-    name:      'On Fire',
-    desc:      '10 donations made',
-    condition: (stats) => stats.donations >= 10
-  },
-  {
-    id:        'ten_kg',
-    icon:      '♻️',
-    name:      'Eco Warrior',
-    desc:      'Rescued 10kg of food',
-    condition: (stats) => stats.totalKg >= 10
-  },
-  {
-    id:        'fifty_kg',
-    icon:      '🏆',
-    name:      'Food Hero',
-    desc:      'Rescued 50kg of food',
-    condition: (stats) => stats.totalKg >= 50
-  },
-  {
-    id:        'hundred_meals',
-    icon:      '🍽️',
-    name:      'Hunger Fighter',
-    desc:      'Provided 100 meals',
-    condition: (stats) => stats.totalMeals >= 100
-  },
-  {
-    id:        'five_hundred_meals',
-    icon:      '👑',
-    name:      'Community Champion',
-    desc:      'Provided 500 meals',
-    condition: (stats) => stats.totalMeals >= 500
-  },
-  {
-    id:        'co2_saver',
-    icon:      '🌿',
-    name:      'Carbon Cutter',
-    desc:      'Saved 25kg of CO₂',
-    condition: (stats) => stats.totalCo2 >= 25
-  },
-  {
-    id:        'water_saver',
-    icon:      '💧',
-    name:      'Water Guardian',
-    desc:      'Saved 1000L of water',
-    condition: (stats) => stats.totalWater >= 1000
-  }
+  { id: 'first_donation', emoji: '🌱', name: 'First Step',    desc: 'Made your first donation',     req: 1,   stat: 'donations' },
+  { id: 'five_donations', emoji: '🍱', name: 'Food Hero',     desc: '5 donations made',             req: 5,   stat: 'donations' },
+  { id: 'ten_donations',  emoji: '🏆', name: 'Champion',      desc: '10 donations made',            req: 10,  stat: 'donations' },
+  { id: 'kg_10',          emoji: '📦', name: 'Rescue Rookie', desc: 'Rescued 10kg of food',         req: 10,  stat: 'totalKg'   },
+  { id: 'kg_50',          emoji: '🚀', name: 'Rescue Pro',    desc: 'Rescued 50kg of food',         req: 50,  stat: 'totalKg'   },
+  { id: 'meals_10',       emoji: '🍽️', name: 'Feeder',        desc: 'Provided 10 meals',            req: 10,  stat: 'totalMeals'},
+  { id: 'meals_50',       emoji: '❤️', name: 'Community Hero','desc': 'Provided 50 meals',          req: 50,  stat: 'totalMeals'},
+  { id: 'co2_10',         emoji: '🌿', name: 'Eco Starter',   desc: 'Saved 10kg CO₂',              req: 10,  stat: 'totalCo2'  },
+  { id: 'co2_50',         emoji: '🌍', name: 'Planet Saver',  desc: 'Saved 50kg CO₂',              req: 50,  stat: 'totalCo2'  },
 ];
 
+// ---- Store stats globally for share modal ----
+let myStats = { meals: 0, kg: 0, co2: 0, water: 0 };
+
 // ============================================
-//  LOAD IMPACT — Personal impact stats
+//  LOAD IMPACT
 // ============================================
 window.loadImpact = async function() {
   if (!window.currentUser) {
-    showLoginPromptImpact();
+    showGuestState();
     return;
   }
 
@@ -98,104 +43,113 @@ window.loadImpact = async function() {
     );
 
     if (statsDoc.exists()) {
-      const stats = statsDoc.data();
-
-      // Animate each counter
-      animateCounter('my-meals', stats.totalMeals  || 0);
-      animateCounter('my-kg',    stats.totalKg     || 0);
-      animateCounter('my-co2',   stats.totalCo2    || 0);
-      animateCounter('my-water', stats.totalWater  || 0);
-
-      // Load badges
-      renderBadges(stats);
-
-    } else {
-      // New user with no stats yet
-      animateCounter('my-meals', 0);
-      animateCounter('my-kg',    0);
-      animateCounter('my-co2',   0);
-      animateCounter('my-water', 0);
-      renderBadges({});
+      const data = statsDoc.data();
+      myStats = {
+        meals: Math.round(data.totalMeals || 0),
+        kg:    Math.round(data.totalKg    || 0),
+        co2:   Math.round(data.totalCo2   || 0),
+        water: Math.round(data.totalWater || 0),
+      };
     }
 
-    // Load city-wide stats
-    loadCityStats();
+    // Animate all elements
+    setTimeout(() => {
+      animateRings();
+      animateProgressBars();
+      updateCO2Visual();
+      renderBadges(myStats);
+    }, 300);
 
-  } catch (error) {
-    console.error('Load impact error:', error);
+  } catch (e) {
+    console.error('Impact load error:', e);
   }
 };
 
 // ============================================
-//  LOAD CITY STATS — Community wide numbers
+//  ANIMATE RINGS
 // ============================================
-async function loadCityStats() {
-  try {
-    const statsDoc = await getDoc(doc(db, 'stats', 'global'));
+function animateRings() {
+  const circumference = 283; // 2 * PI * 45
 
-    if (statsDoc.exists()) {
-      const data = statsDoc.data();
+  // Counter animation
+  animateImpactCounter('my-meals', myStats.meals);
+  animateImpactCounter('my-kg',    myStats.kg);
+  animateImpactCounter('my-co2',   myStats.co2);
+  animateImpactCounter('my-water', myStats.water);
 
-      // Check if city stats section exists
-      const citySection = document.querySelector('.city-impact');
-      if (!citySection) {
-        addCityStatsSection(data);
-      } else {
-        document.getElementById('city-meals')
-          && animateCounter('city-meals', data.totalMeals || 0);
-        document.getElementById('city-kg')
-          && animateCounter('city-kg',    data.totalKg    || 0);
-        document.getElementById('city-co2')
-          && animateCounter('city-co2',   data.totalCo2   || 0);
-      }
-    }
-  } catch (e) {
-    console.log('City stats error:', e);
-  }
+  // Ring fill animation
+  animateRing('ring-meals', myStats.meals, GOALS.meals,  circumference);
+  animateRing('ring-kg',    myStats.kg,    GOALS.kg,     circumference);
+  animateRing('ring-co2',   myStats.co2,   GOALS.co2,    circumference);
+  animateRing('ring-water', myStats.water, GOALS.water,  circumference);
+}
+
+function animateRing(id, value, goal, circumference) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const pct    = Math.min(value / goal, 1);
+  const offset = circumference - (pct * circumference);
+  setTimeout(() => {
+    el.style.strokeDashoffset = offset;
+  }, 100);
 }
 
 // ============================================
-//  ADD CITY STATS SECTION — inject into page
+//  ANIMATE PROGRESS BARS
 // ============================================
-function addCityStatsSection(data) {
-  const container = document.querySelector('#page-impact .page-container');
-  if (!container) return;
+function animateProgressBars() {
+  setProgress('prog-meals', 'prog-meals-val',
+    myStats.meals, GOALS.meals,  'meals');
+  setProgress('prog-kg',    'prog-kg-val',
+    myStats.kg,    GOALS.kg,     'kg');
+  setProgress('prog-co2',   'prog-co2-val',
+    myStats.co2,   GOALS.co2,    'kg CO₂');
+  setProgress('prog-water', 'prog-water-val',
+    myStats.water, GOALS.water,  'L');
+}
 
-  const section = document.createElement('div');
-  section.className = 'city-impact';
-  section.innerHTML = `
-    <h2>🌍 Community Impact</h2>
-    <p>Together, FoodBridge users are making a real difference</p>
-    <div class="city-stats">
-      <div class="city-stat">
-        <h3 id="city-meals">0</h3>
-        <p>Total Meals</p>
-      </div>
-      <div class="city-stat">
-        <h3 id="city-kg">0</h3>
-        <p>KG Rescued</p>
-      </div>
-      <div class="city-stat">
-        <h3 id="city-co2">0</h3>
-        <p>KG CO₂ Saved</p>
-      </div>
-    </div>
-  `;
+function setProgress(barId, valId, value, goal, unit) {
+  const bar = document.getElementById(barId);
+  const val = document.getElementById(valId);
+  if (!bar || !val) return;
+  const pct = Math.min((value / goal) * 100, 100);
+  setTimeout(() => { bar.style.width = pct + '%'; }, 200);
+  val.textContent = `${value} / ${goal} ${unit}`;
+}
 
-  // Insert before badges card
-  const badgesCard = document.querySelector('.badges-card');
-  if (badgesCard) {
-    container.insertBefore(section, badgesCard);
-  } else {
-    container.appendChild(section);
+// ============================================
+//  CO2 VISUALIZATION
+// ============================================
+function updateCO2Visual() {
+  const tree    = document.getElementById('impact-tree');
+  const bar     = document.getElementById('co2-bar');
+  const equiv   = document.getElementById('co2-equivalent');
+  const target  = document.getElementById('co2-target-label');
+  const co2     = myStats.co2;
+
+  if (!tree) return;
+
+  // Tree grows with CO2 saved
+  if      (co2 >= 100) tree.textContent = '🌳';
+  else if (co2 >= 50)  tree.textContent = '🌲';
+  else if (co2 >= 20)  tree.textContent = '🌿';
+  else if (co2 >= 5)   tree.textContent = '🪴';
+  else                 tree.textContent = '🌱';
+
+  // Bar fill
+  const pct = Math.min((co2 / 100) * 100, 100);
+  setTimeout(() => { if (bar) bar.style.width = pct + '%'; }, 300);
+
+  if (target) target.textContent = `Goal: 100 kg`;
+
+  // Equivalents
+  if (equiv) {
+    if      (co2 === 0)  equiv.textContent = '🌍 Start donating to see your carbon impact!';
+    else if (co2 < 10)   equiv.textContent = `🚗 Equivalent to skipping ${co2} car trips!`;
+    else if (co2 < 50)   equiv.textContent = `✈️ Like avoiding ${Math.round(co2/10)} short flights!`;
+    else if (co2 < 100)  equiv.textContent = `🌳 You've saved the equivalent of planting ${Math.round(co2/5)} trees!`;
+    else                 equiv.textContent = `🏆 Amazing! You've offset ${co2}kg of CO₂ — a real climate hero!`;
   }
-
-  // Animate the new counters
-  setTimeout(() => {
-    animateCounter('city-meals', data.totalMeals || 0);
-    animateCounter('city-kg',    data.totalKg    || 0);
-    animateCounter('city-co2',   data.totalCo2   || 0);
-  }, 100);
 }
 
 // ============================================
@@ -208,136 +162,157 @@ function renderBadges(stats) {
   container.innerHTML = '';
 
   ALL_BADGES.forEach(badge => {
-    const unlocked = badge.condition(stats);
-    const div      = document.createElement('div');
+    const statMap = {
+      donations:  stats.donations || 0,
+      totalKg:    stats.kg,
+      totalMeals: stats.meals,
+      totalCo2:   stats.co2,
+    };
 
-    div.className = `badge-item ${unlocked ? '' : 'locked'}`;
-    div.title     = badge.desc;
+    const earned = (statMap[badge.stat] || 0) >= badge.req;
+    const div    = document.createElement('div');
+    div.className = `badge-card ${earned ? 'earned' : 'locked'}`;
     div.innerHTML = `
-      <div class="badge-icon">${badge.icon}</div>
+      <span class="badge-emoji">${badge.emoji}</span>
       <div class="badge-name">${badge.name}</div>
-      <div class="badge-locked-label">
-        ${unlocked ? '✅ Unlocked' : '🔒 ' + badge.desc}
-      </div>
+      <div class="badge-desc">${badge.desc}</div>
     `;
-
     container.appendChild(div);
   });
 }
 
 // ============================================
-//  LOAD LEADERBOARD — Top donors
+//  LOAD LEADERBOARD
 // ============================================
 window.loadLeaderboard = async function() {
   const listEl = document.getElementById('leaderboard-list');
   if (!listEl) return;
 
-  listEl.innerHTML =
-    '<p class="empty-msg">⏳ Loading leaderboard...</p>';
+  listEl.innerHTML = '<p style="color:#6b7c6e;text-align:center;padding:20px">⏳ Loading...</p>';
 
   try {
-    const q = query(
-      collection(db, 'userStats'),
-      orderBy('totalMeals', 'desc'),
-      limit(10)
+    const snap = await getDocs(
+      query(collection(db, 'userStats'),
+        orderBy('totalKg', 'desc'), limit(10))
     );
 
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-      listEl.innerHTML =
-        '<p class="empty-msg">No entries yet. Be the first! 🌱</p>';
+    if (snap.empty) {
+      listEl.innerHTML = '<p style="color:#6b7c6e;text-align:center;padding:20px">No data yet — be the first!</p>';
       return;
     }
 
-    listEl.innerHTML = '';
-    let rank = 1;
-
-    // Get names for each user
-    const promises = snapshot.docs.map(async (docSnap) => {
-      const stats  = docSnap.data();
-      const userId = docSnap.id;
-
-      // Fetch user name
-      let name = 'Anonymous';
+    const items = [];
+    const namePromises = snap.docs.map(async (d, i) => {
+      const data = d.data();
+      let name   = 'Anonymous';
       try {
-        const userDoc = await getDoc(doc(db, 'users', userId));
-        if (userDoc.exists()) {
-          name = userDoc.data().name || 'Anonymous';
-        }
+        const userDoc = await getDoc(doc(db, 'users', d.id));
+        if (userDoc.exists()) name = userDoc.data().name || 'Anonymous';
       } catch (e) {}
-
-      return { stats, name, rank: rank++ };
+      items.push({
+        rank:   i + 1,
+        name,
+        kg:     Math.round(data.totalKg    || 0),
+        meals:  Math.round(data.totalMeals || 0),
+        isMe:   d.id === window.currentUser?.uid
+      });
     });
 
-    const entries = await Promise.all(promises);
+    await Promise.all(namePromises);
+    listEl.innerHTML = '';
 
-    entries.forEach(entry => {
-      listEl.appendChild(
-        createLeaderboardItem(entry.name, entry.stats, entry.rank)
-      );
+    items.forEach(item => {
+      const div    = document.createElement('div');
+      div.className = `lb-item ${item.isMe ? 'current-user' : ''}`;
+
+      const rankDisplay = item.rank === 1 ? '🥇'
+        : item.rank === 2 ? '🥈'
+        : item.rank === 3 ? '🥉'
+        : `<span class="lb-rank-num">${item.rank}</span>`;
+
+      const colors = ['#2d6a4f','#0077b6','#e76f51','#7c3aed','#0d9488'];
+      const color  = colors[(item.rank - 1) % colors.length];
+      const initial = item.name[0].toUpperCase();
+
+      div.innerHTML = `
+        <div class="lb-rank">${rankDisplay}</div>
+        <div class="lb-avatar" style="background:${color}">${initial}</div>
+        <div class="lb-info">
+          <div class="lb-name">${item.name}${item.isMe ? ' ⭐' : ''}</div>
+          <div class="lb-stat">${item.meals} meals provided</div>
+        </div>
+        <div>
+          <span class="lb-score">${item.kg}</span>
+          <span class="lb-score-unit"> kg</span>
+        </div>
+      `;
+      listEl.appendChild(div);
     });
 
-  } catch (error) {
-    listEl.innerHTML =
-      '<p class="empty-msg">Could not load leaderboard.</p>';
-    console.error('Leaderboard error:', error);
+  } catch (e) {
+    listEl.innerHTML = '<p style="color:#e63946;text-align:center;padding:20px">Could not load leaderboard.</p>';
+    console.error(e);
   }
 };
 
 // ============================================
-//  CREATE LEADERBOARD ITEM
+//  SHARE MODAL
 // ============================================
-function createLeaderboardItem(name, stats, rank) {
-  const div = document.createElement('div');
-  div.className = 'leaderboard-item';
+window.openShareModal = function() {
+  document.getElementById('share-meals').textContent = myStats.meals;
+  document.getElementById('share-kg').textContent    = myStats.kg;
+  document.getElementById('share-co2').textContent   = myStats.co2;
+  document.getElementById('share-water').textContent = myStats.water;
+  document.getElementById('share-modal').classList.remove('hidden');
+};
 
-  const rankEmoji =
-    rank === 1 ? '🥇' :
-    rank === 2 ? '🥈' :
-    rank === 3 ? '🥉' : rank;
+window.closeShareModal = function() {
+  document.getElementById('share-modal').classList.add('hidden');
+};
 
-  const rankClass =
-    rank === 1 ? 'rank-1' :
-    rank === 2 ? 'rank-2' :
-    rank === 3 ? 'rank-3' : 'rank-other';
+window.copyShareText = function() {
+  const text = `🌱 My FoodBridge Impact:\n🍽️ ${myStats.meals} meals provided\n📦 ${myStats.kg}kg food rescued\n🌿 ${myStats.co2}kg CO₂ avoided\n💧 ${myStats.water}L water saved\n\nJoin me at FoodBridge!`;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('✅ Copied to clipboard!');
+  });
+};
 
-  // Highlight current user
-  const isMe = window.currentUserData?.name === name;
-
-  div.innerHTML = `
-    <div class="rank-number ${rankClass}">${rankEmoji}</div>
-    <div class="leaderboard-info">
-      <h4>${name} ${isMe ? '⭐ (You)' : ''}</h4>
-      <p>${stats.donations || 0} donations •
-         ${stats.totalKg   || 0} kg rescued</p>
-    </div>
-    <div class="leaderboard-score">
-      ${stats.totalMeals || 0}
-      <span style="font-size:0.7rem;
-                   color:var(--gray);
-                   font-family:'DM Sans'"> meals</span>
-    </div>
-  `;
-
-  return div;
+// ============================================
+//  GUEST STATE
+// ============================================
+function showGuestState() {
+  const body = document.querySelector('.impact-body');
+  if (body) {
+    body.innerHTML = `
+      <div style="text-align:center;padding:80px 20px">
+        <p style="font-size:4rem;margin-bottom:16px">🌱</p>
+        <h2 style="font-family:'Playfair Display',serif;
+          color:#1b2d1f;margin-bottom:12px">
+          Start Your Impact Journey
+        </h2>
+        <p style="color:#6b7c6e;margin-bottom:28px">
+          Login to see your personal impact stats
+        </p>
+        <button onclick="showPage('auth')"
+          class="btn-primary"
+          style="width:auto;padding:14px 32px">
+          Login / Sign Up
+        </button>
+      </div>`;
+  }
 }
 
 // ============================================
-//  SHOW LOGIN PROMPT on impact page
+//  COUNTER ANIMATION
 // ============================================
-function showLoginPromptImpact() {
-  const grid = document.querySelector('.impact-grid');
-  if (!grid) return;
-
-  grid.innerHTML = `
-    <div class="login-prompt" style="grid-column: 1/-1">
-      <h3>🔐 Login to See Your Impact</h3>
-      <p>Track your personal contribution to fighting food waste</p>
-      <button onclick="showPage('auth')" class="btn-primary"
-        style="width:auto; padding: 12px 32px; margin: 16px auto 0">
-        Login / Sign Up
-      </button>
-    </div>
-  `;
+function animateImpactCounter(id, target) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  let current = 0;
+  const step  = Math.ceil(target / 40) || 1;
+  const timer = setInterval(() => {
+    current += step;
+    if (current >= target) { current = target; clearInterval(timer); }
+    el.textContent = current.toLocaleString();
+  }, 30);
 }
