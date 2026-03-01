@@ -1,5 +1,5 @@
 // ============================================
-//  FOODBRIDGE — map.js
+//  nourishh — map.js
 //  Interactive map view of food listings
 //  Uses Leaflet.js + OpenStreetMap (FREE!)
 // ============================================
@@ -188,7 +188,7 @@ async function geocodeAddress(address) {
     const response = await fetch(url, {
       headers: {
         'Accept-Language': 'en',
-        'User-Agent':      'FoodBridge/1.0'
+        'User-Agent':      'Nourishh /1.0'
       }
     });
 

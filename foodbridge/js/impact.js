@@ -1,5 +1,5 @@
 // ============================================
-//  FOODBRIDGE — impact.js
+//  nourishh — impact.js
 //  Impact page with rings, CO2, badges, share
 // ============================================
 
@@ -271,7 +271,7 @@ window.closeShareModal = function() {
 };
 
 window.copyShareText = function() {
-  const text = `🌱 My FoodBridge Impact:\n🍽️ ${myStats.meals} meals provided\n📦 ${myStats.kg}kg food rescued\n🌿 ${myStats.co2}kg CO₂ avoided\n💧 ${myStats.water}L water saved\n\nJoin me at FoodBridge!`;
+  const text = `🌱 My nourishh Impact:\n🍽️ ${myStats.meals} meals provided\n📦 ${myStats.kg}kg food rescued\n🌿 ${myStats.co2}kg CO₂ avoided\n💧 ${myStats.water}L water saved\n\nJoin me at Nourishh !`;
   navigator.clipboard.writeText(text).then(() => {
     alert('✅ Copied to clipboard!');
   });

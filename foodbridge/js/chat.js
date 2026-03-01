@@ -1,5 +1,5 @@
 // ============================================
-//  FOODBRIDGE — chat.js
+//  nourishh — chat.js
 //  Real-time chat between donor & recipient
 // ============================================
 
@@ -99,7 +99,7 @@ async function ensureChatExists(chatId, title) {
       await addDoc(collection(db, 'chats', chatId, 'messages'), {
         text:       '🌱 Chat started! Coordinate your food pickup here.',
         senderId:   'system',
-        senderName: 'FoodBridge',
+        senderName: 'Nourishh ',
         sentAt:     serverTimestamp(),
         type:       'system'
       });

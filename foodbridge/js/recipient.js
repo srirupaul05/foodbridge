@@ -1,5 +1,5 @@
 // ============================================
-//  FOODBRIDGE — recipient.js
+//  nourishh — recipient.js
 //  Browse & claim available food listings
 // ============================================
 

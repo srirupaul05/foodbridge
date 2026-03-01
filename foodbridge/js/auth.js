@@ -1,5 +1,5 @@
 // ============================================
-//  FOODBRIDGE — auth.js
+//  nourishh — auth.js
 //  Login, Signup & Logout logic
 // ============================================
 

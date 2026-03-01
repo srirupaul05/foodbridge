@@ -1,5 +1,5 @@
 // ============================================
-//  FOODBRIDGE — tracker.js
+//  nourishh — tracker.js
 //  Expiry tracker with notifications & sorting
 // ============================================
 
@@ -421,7 +421,7 @@ function showExpiryNotifications(items) {
     'Notification' in window &&
     Notification.permission === 'granted'
   ) {
-    new Notification('🌱 FoodBridge Expiry Alert!', {
+    new Notification('🌱 nourishh Expiry Alert!', {
       body: expiredItems.length > 0
         ? `${expiredItems[0]} has expired!`
         : `${urgentItems[0]} expires soon!`,

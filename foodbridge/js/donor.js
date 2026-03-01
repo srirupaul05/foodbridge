@@ -1,5 +1,5 @@
 // ============================================
-//  FOODBRIDGE — donor.js
+//  nourishh — donor.js
 //  Post food listings, camera & manage donations
 // ============================================
 

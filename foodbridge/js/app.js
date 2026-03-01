@@ -1,5 +1,5 @@
 // ============================================
-//  FOODBRIDGE — app.js
+//  nourishh — app.js
 //  Main logic: page routing & navigation
 // ============================================
 
@@ -208,7 +208,7 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
   showPage('home');
-  console.log('🌱 FoodBridge loaded!');
+  console.log('🌱 nourishh loaded!');
 });
 
 // ============================================
