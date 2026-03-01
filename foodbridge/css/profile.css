@@ -1,0 +1,291 @@
+/* ============================================
+   NOURISHH — Profile Page
+   Clean, warm, personal
+============================================ */
+
+/* ---- Profile Layout ---- */
+.profile-container {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+/* ---- Profile Hero Card ---- */
+.profile-hero-card {
+  background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 60%, #40916c 100%);
+  border-radius: 24px;
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-hero-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 80% 50%,
+    rgba(149,213,178,0.15) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.profile-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: white;
+  font-family: 'Playfair Display', serif;
+  flex-shrink: 0;
+  border: 3px solid rgba(255,255,255,0.3);
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.profile-hero-info {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+
+.profile-hero-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 6px;
+}
+
+.profile-hero-email {
+  font-size: 0.875rem;
+  color: #b7e4c7;
+  font-family: 'DM Sans', sans-serif;
+  margin-bottom: 12px;
+}
+
+.profile-role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  padding: 5px 14px;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.profile-joined {
+  font-size: 0.75rem;
+  color: #95d5b2;
+  font-family: 'DM Sans', sans-serif;
+  margin-top: 8px;
+}
+
+/* ---- Stats Row ---- */
+.profile-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.profile-stat-card {
+  background: white;
+  border-radius: 18px;
+  padding: 22px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(29,45,31,0.07);
+  border: 1px solid #f0f5f1;
+  transition: transform 0.2s;
+}
+
+.profile-stat-card:hover {
+  transform: translateY(-3px);
+}
+
+.profile-stat-emoji {
+  font-size: 1.8rem;
+  margin-bottom: 8px;
+}
+
+.profile-stat-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #1b2d1f;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.profile-stat-label {
+  font-size: 0.75rem;
+  color: #6b7c6e;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+}
+
+/* ---- Section Card ---- */
+.profile-section {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 4px 20px rgba(29,45,31,0.07);
+  border: 1px solid #f0f5f1;
+  margin-bottom: 20px;
+}
+
+.profile-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  color: #1b2d1f;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---- Form Fields ---- */
+.profile-field {
+  margin-bottom: 18px;
+}
+
+.profile-field label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6b7c6e;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-family: 'DM Sans', sans-serif;
+  margin-bottom: 8px;
+}
+
+.profile-field input,
+.profile-field select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e8e2;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-family: 'DM Sans', sans-serif;
+  color: #1b2d1f;
+  background: #f8fdf9;
+  transition: border 0.2s;
+  outline: none;
+  margin: 0;
+}
+
+.profile-field input:focus,
+.profile-field select:focus {
+  border-color: #2d6a4f;
+  background: white;
+}
+
+.profile-field input:disabled {
+  background: #f3f4f6;
+  color: #9b9fa8;
+  cursor: not-allowed;
+  border-color: #e8eaed;
+}
+
+/* ---- Save Button ---- */
+.btn-save-profile {
+  background: #2d6a4f;
+  color: white;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-save-profile:hover {
+  background: #40916c;
+  transform: translateY(-2px);
+}
+
+.profile-save-msg {
+  font-size: 0.85rem;
+  margin-top: 12px;
+  min-height: 20px;
+  font-family: 'DM Sans', sans-serif;
+}
+
+/* ---- Danger Zone ---- */
+.danger-zone {
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 20px;
+}
+
+.danger-zone-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  color: #dc2626;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.danger-zone-desc {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-family: 'DM Sans', sans-serif;
+  margin-bottom: 18px;
+  line-height: 1.6;
+}
+
+.btn-danger {
+  background: transparent;
+  color: #dc2626;
+  border: 2px solid #fca5a5;
+  padding: 10px 24px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-danger:hover {
+  background: #fef2f2;
+  border-color: #dc2626;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 640px) {
+  .profile-hero-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 28px 20px;
+  }
+
+  .profile-stats-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .profile-stat-value { font-size: 1.4rem; }
+  .profile-container  { padding: 24px 16px; }
+}

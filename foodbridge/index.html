@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="css/impact.css"/>
   <link rel="stylesheet" href="css/chat.css"/>
   <link rel="stylesheet" href="css/map.css"/>
+  <link rel="stylesheet" href="css/profile.css"/>
 
   <!-- Leaflet Map CSS — free, no API key -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -56,7 +57,8 @@
       <button onclick="showPage('auth')" class="btn-signup">Sign Up</button>
     </div>
     <div class="nav-user hidden" id="navUser">
-      <span id="userNameDisplay"></span>
+      <span id="userNameDisplay" onclick="showPage('profile')"
+      style="cursor:pointer"></span>
       <button onclick="logoutUser()" class="btn-logout">Logout</button>
     </div>
   </nav>
@@ -523,6 +525,91 @@
     </div>
   </div>
 
+  <!-- ===== PROFILE PAGE ===== -->
+  <div id="page-profile" class="page">
+    <div class="profile-container">
+
+      <!-- Hero Card -->
+      <div class="profile-hero-card">
+        <div class="profile-avatar" id="profile-avatar">?</div>
+        <div class="profile-hero-info">
+          <div class="profile-hero-name" id="profile-hero-name">
+            Loading...
+          </div>
+          <div class="profile-hero-email" id="profile-hero-email"></div>
+          <div class="profile-role-badge" id="profile-role-badge">
+            🍱 donor
+          </div>
+          <div class="profile-joined" id="profile-joined"></div>
+        </div>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="profile-stats-row">
+        <div class="profile-stat-card">
+          <div class="profile-stat-emoji">🍱</div>
+          <div class="profile-stat-value" id="profile-donations">0</div>
+          <div class="profile-stat-label">Donations</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="profile-stat-emoji">📦</div>
+          <div class="profile-stat-value" id="profile-kg">0</div>
+          <div class="profile-stat-label">KG Rescued</div>
+        </div>
+        <div class="profile-stat-card">
+          <div class="profile-stat-emoji">🍽️</div>
+          <div class="profile-stat-value" id="profile-meals">0</div>
+          <div class="profile-stat-label">Meals Given</div>
+        </div>
+      </div>
+
+      <!-- Edit Profile -->
+      <div class="profile-section">
+        <div class="profile-section-title">✏️ Edit Profile</div>
+
+        <div class="profile-field">
+          <label>Full Name</label>
+          <input type="text" id="profile-name-input"
+            placeholder="Your full name"/>
+        </div>
+
+        <div class="profile-field">
+          <label>Email</label>
+          <input type="email" id="profile-email-input"
+            placeholder="Email" disabled/>
+        </div>
+
+        <div class="profile-field">
+          <label>Role</label>
+          <select id="profile-role-input">
+            <option value="donor">🍱 Donor</option>
+            <option value="recipient">🙏 Recipient</option>
+            <option value="volunteer">🚗 Volunteer</option>
+          </select>
+        </div>
+
+        <button class="btn-save-profile" onclick="saveProfile()">
+          💾 Save Changes
+        </button>
+        <div class="profile-save-msg" id="profile-save-msg"></div>
+      </div>
+
+      <!-- Danger Zone -->
+      <div class="danger-zone">
+        <div class="danger-zone-title">⚠️ Danger Zone</div>
+        <div class="danger-zone-desc">
+          Once you delete your account, all your data including
+          donations, impact stats and badges will be permanently
+          removed. This action cannot be undone.
+        </div>
+        <button class="btn-danger" onclick="deleteAccount()">
+          🗑️ Delete My Account
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- ===== IMPACT PAGE ===== -->
   <div id="page-impact" class="page">
 
@@ -740,7 +827,7 @@
   <script type="module" src="js/impact.js"></script>
   <script type="module" src="js/chat.js"></script>
   <script type="module" src="js/map.js"></script>
-
+  <script type="module" src="js/profile.js"></script>
 
   <!-- Leaflet Map JS — free, no API key -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

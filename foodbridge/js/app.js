@@ -18,7 +18,7 @@ const ADMIN_EMAILS = [
 // ---- All page IDs ----
 const pages = [
   'home', 'auth', 'donor',
-  'recipient', 'tracker', 'impact'
+  'recipient', 'tracker', 'impact', 'profile'
 ];
 
 // ---- Current logged in user (global) ----
@@ -69,6 +69,9 @@ window.currentUserData = null;
   }
   if (pageName === 'tracker' && window.currentUser) {
     if (typeof loadTrackerItems === 'function') loadTrackerItems();
+  }
+  if (pageName === 'profile') {
+    if (typeof loadProfile === 'function') loadProfile();
   }
 };
 
