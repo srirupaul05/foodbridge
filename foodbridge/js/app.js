@@ -76,7 +76,10 @@ window.currentUserData = null;
   }
 
   if (pageName === 'admin') {
-    if (typeof loadAdmin === 'function') loadAdmin();
+    if (typeof loadAdmin === 'function') {
+      // Wait for auth to be ready
+      setTimeout(() => loadAdmin(), 500);
+    }
   }
 };
 

@@ -40,7 +40,12 @@
   height: 6px;
   background: var(--orange-light);
   border-radius: 4px;
-  z-index: -1;
+  z-index: 0;
+}
+
+.hero-text h1 span {
+  position: relative;
+  z-index: 1;
 }
 
 .hero-text p {

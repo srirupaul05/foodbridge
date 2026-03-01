@@ -1,17 +1,12 @@
 // ============================================
 //  FOODBRIDGE — admin.js
-//  Admin dashboard — only for Srirup Paul
+//  Clean & Modern Admin Dashboard
 // ============================================
 
 import { db } from './firebase-config.js';
 import {
-  collection,
-  getDocs,
-  doc,
-  deleteDoc,
-  query,
-  orderBy,
-  getDoc
+  collection, getDocs, doc,
+  deleteDoc, query, orderBy, getDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // ---- Admin emails ----
@@ -20,44 +15,13 @@ const ADMIN_EMAILS = [
   'srirupaul14@gmail.com'
 ];
 
-// ---- Store data for search ----
+// ---- Data stores ----
 let allUsersData     = [];
 let allDonationsData = [];
 let allClaimsData    = [];
 
 // ============================================
-//  CHECK ADMIN ACCESS
-// ============================================
-window.loadAdmin = async function() {
-  // Check if logged in
-  if (!window.currentUser) {
-    alert('❌ Access Denied! Please login first.');
-    showPage('home');
-    return;
-  }
-
-  // Check if admin
-  if (!ADMIN_EMAILS.includes(window.currentUser.email)) {
-    alert('❌ Access Denied! You are not an admin.');
-    showPage('home');
-    return;
-  }
-
-  // Show admin nav link
-  const adminNav = document.getElementById('nav-admin');
-  if (adminNav) adminNav.classList.remove('hidden');
-
-  // Load all data
-  await Promise.all([
-    loadAdminOverview(),
-    loadUsersTable(),
-    loadDonationsTable(),
-    loadClaimsTable()
-  ]);
-};
-
-// ============================================
-//  SHOW ADMIN NAV — when logged in as admin
+//  SHOW ADMIN NAV
 // ============================================
 window.showAdminNav = function() {
   if (!window.currentUser) return;
@@ -68,32 +32,65 @@ window.showAdminNav = function() {
 };
 
 // ============================================
-//  LOAD OVERVIEW CARDS
+//  LOAD ADMIN
+// ============================================
+window.loadAdmin = async function() {
+  // Wait for auth
+  if (!window.currentUser) {
+    setTimeout(() => loadAdmin(), 300);
+    return;
+  }
+
+  if (!ADMIN_EMAILS.includes(window.currentUser.email)) {
+    showPage('home');
+    return;
+  }
+
+  // Load overview by default
+  showAdminSection('overview');
+  await loadAdminOverview();
+  await loadUsersTable();
+  await loadDonationsTable();
+  await loadClaimsTable();
+};
+
+// ============================================
+//  SHOW ADMIN SECTION
+// ============================================
+window.showAdminSection = function(section) {
+  // Hide all sections
+  ['overview', 'users', 'donations', 'claims'].forEach(s => {
+    const el = document.getElementById(`admin-section-${s}`);
+    if (el) el.classList.add('hidden');
+    const nav = document.getElementById(`nav-${s}`);
+    if (nav) nav.classList.remove('active');
+  });
+
+  // Show selected
+  const target = document.getElementById(`admin-section-${section}`);
+  if (target) target.classList.remove('hidden');
+  const navBtn = document.getElementById(`nav-${section}`);
+  if (navBtn) navBtn.classList.add('active');
+};
+
+// ============================================
+//  OVERVIEW
 // ============================================
 async function loadAdminOverview() {
   try {
-    // Total users
-    const usersSnap = await getDocs(collection(db, 'users'));
-    animateAdminCounter('admin-total-users', usersSnap.size);
+    const [usersSnap, donationsSnap, claimsSnap, statsDoc] =
+      await Promise.all([
+        getDocs(collection(db, 'users')),
+        getDocs(collection(db, 'foodListings')),
+        getDocs(collection(db, 'claims')),
+        getDoc(doc(db, 'stats', 'global'))
+      ]);
 
-    // Total donations
-    const donationsSnap = await getDocs(
-      collection(db, 'foodListings')
-    );
+    animateAdminCounter('admin-total-users',     usersSnap.size);
     animateAdminCounter('admin-total-donations', donationsSnap.size);
-
-    // Total claims
-    const claimsSnap = await getDocs(collection(db, 'claims'));
-    animateAdminCounter('admin-total-claims', claimsSnap.size);
-
-    // Total kg from global stats
-    const statsDoc = await getDoc(doc(db, 'stats', 'global'));
-    if (statsDoc.exists()) {
-      animateAdminCounter(
-        'admin-total-kg',
-        Math.round(statsDoc.data().totalKg || 0)
-      );
-    }
+    animateAdminCounter('admin-total-claims',    claimsSnap.size);
+    animateAdminCounter('admin-total-kg',
+      Math.round(statsDoc.data()?.totalKg || 0));
 
   } catch (e) {
     console.error('Overview error:', e);
@@ -101,68 +98,65 @@ async function loadAdminOverview() {
 }
 
 // ============================================
-//  LOAD USERS TABLE
+//  USERS TABLE
 // ============================================
 async function loadUsersTable() {
   const tbody = document.getElementById('users-tbody');
   if (!tbody) return;
 
   try {
-    const snapshot = await getDocs(
+    const snap = await getDocs(
       query(collection(db, 'users'), orderBy('joinedAt', 'desc'))
     );
 
     allUsersData = [];
-    snapshot.forEach(docSnap => {
-      allUsersData.push({ id: docSnap.id, ...docSnap.data() });
-    });
+    snap.forEach(d => allUsersData.push({ id: d.id, ...d.data() }));
+
+    const countEl = document.getElementById('users-count');
+    if (countEl) countEl.textContent = `(${allUsersData.length})`;
 
     renderUsersTable(allUsersData);
-
   } catch (e) {
-    tbody.innerHTML = `
-      <tr><td colspan="6" class="table-loading">
-        ⚠️ Error loading users.
-      </td></tr>`;
-    console.error('Users table error:', e);
+    tbody.innerHTML = `<tr><td colspan="6" class="admin-loading">⚠️ Error loading users.</td></tr>`;
   }
 }
 
-// ---- Render Users Table ----
 function renderUsersTable(data) {
   const tbody = document.getElementById('users-tbody');
   if (!tbody) return;
 
   if (data.length === 0) {
-    tbody.innerHTML = `
-      <tr><td colspan="6" class="table-loading">
-        No users found.
-      </td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6"><div class="admin-empty"><p>No users found</p></div></td></tr>`;
     return;
   }
 
   tbody.innerHTML = '';
   data.forEach(user => {
     const row = document.createElement('tr');
-    const joinDate = user.joinedAt?.toDate
-      ? formatAdminDate(user.joinedAt.toDate())
-      : 'Unknown';
+    const joined = user.joinedAt?.toDate
+      ? formatDate(user.joinedAt.toDate()) : '—';
 
     row.innerHTML = `
-      <td><strong>${user.name || 'N/A'}</strong></td>
-      <td>${user.email || 'N/A'}</td>
       <td>
-        <span class="badge-${user.role || 'donor'}">
-          ${user.role || 'donor'}
-        </span>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:32px;height:32px;border-radius:50%;
+            background:${stringToColor(user.name || 'U')};
+            display:flex;align-items:center;justify-content:center;
+            font-size:0.8rem;font-weight:700;color:white;flex-shrink:0">
+            ${(user.name || 'U')[0].toUpperCase()}
+          </div>
+          <span style="font-weight:500;color:#111827">
+            ${user.name || 'Unknown'}
+          </span>
+        </div>
       </td>
-      <td>${joinDate}</td>
-      <td>${user.totalDonations || 0}</td>
+      <td style="color:#6b7280">${user.email || '—'}</td>
+      <td><span class="role-badge ${user.role || 'donor'}">${user.role || 'donor'}</span></td>
+      <td style="color:#6b7280">${joined}</td>
+      <td style="color:#6b7280">${user.totalDonations || 0}</td>
       <td>
-        <button
-          class="btn-table-delete"
-          onclick="adminDeleteUser('${user.id}')">
-          🗑️ Delete
+        <button class="btn-admin-delete" onclick="adminDeleteUser('${user.id}')">
+          🗑 Delete
         </button>
       </td>
     `;
@@ -171,80 +165,59 @@ function renderUsersTable(data) {
 }
 
 // ============================================
-//  LOAD DONATIONS TABLE
+//  DONATIONS TABLE
 // ============================================
 async function loadDonationsTable() {
   const tbody = document.getElementById('donations-tbody');
   if (!tbody) return;
 
   try {
-    const snapshot = await getDocs(
+    const snap = await getDocs(
       query(collection(db, 'foodListings'), orderBy('createdAt', 'desc'))
     );
 
     allDonationsData = [];
-    snapshot.forEach(docSnap => {
-      allDonationsData.push({ id: docSnap.id, ...docSnap.data() });
-    });
+    snap.forEach(d => allDonationsData.push({ id: d.id, ...d.data() }));
+
+    const countEl = document.getElementById('donations-count');
+    if (countEl) countEl.textContent = `(${allDonationsData.length})`;
 
     renderDonationsTable(allDonationsData);
-
   } catch (e) {
-    tbody.innerHTML = `
-      <tr><td colspan="9" class="table-loading">
-        ⚠️ Error loading donations.
-      </td></tr>`;
-    console.error('Donations table error:', e);
+    tbody.innerHTML = `<tr><td colspan="7" class="admin-loading">⚠️ Error loading donations.</td></tr>`;
   }
 }
 
-// ---- Render Donations Table ----
 function renderDonationsTable(data) {
   const tbody = document.getElementById('donations-tbody');
   if (!tbody) return;
 
   if (data.length === 0) {
-    tbody.innerHTML = `
-      <tr><td colspan="9" class="table-loading">
-        No donations found.
-      </td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7"><div class="admin-empty"><p>No donations yet</p></div></td></tr>`;
     return;
   }
 
   tbody.innerHTML = '';
   data.forEach(item => {
-    const row      = document.createElement('tr');
-    const posted   = item.createdAt?.toDate
-      ? formatAdminDate(item.createdAt.toDate())
-      : 'Unknown';
-    const expiry   = item.expiryDate?.toDate
-      ? formatAdminDate(item.expiryDate.toDate())
-      : 'Unknown';
-    const now      = new Date();
-    const expired  = item.expiryDate?.toDate
-      ? item.expiryDate.toDate() < now
-      : false;
+    const row    = document.createElement('tr');
+    const posted = item.createdAt?.toDate ? formatDate(item.createdAt.toDate()) : '—';
+    const now    = new Date();
+    const expired = item.expiryDate?.toDate
+      ? item.expiryDate.toDate() < now : false;
 
-    const statusBadge = expired
-      ? `<span class="badge-expired">Expired</span>`
-      : item.status === 'claimed'
-        ? `<span class="badge-claimed">Claimed</span>`
-        : `<span class="badge-available">Available</span>`;
+    const status = expired ? 'expired'
+      : item.status === 'claimed' ? 'claimed' : 'available';
 
     row.innerHTML = `
-      <td><strong>${item.foodName || 'N/A'}</strong></td>
-      <td>${item.donorName || 'N/A'}</td>
-      <td>${item.donorEmail || 'N/A'}</td>
-      <td>${item.quantity} ${item.unit}</td>
-      <td>${item.location || 'N/A'}</td>
-      <td>${statusBadge}</td>
-      <td>${posted}</td>
-      <td>${expiry}</td>
+      <td style="font-weight:500;color:#111827">${item.foodName || '—'}</td>
+      <td style="color:#6b7280">${item.donorName || '—'}</td>
+      <td style="color:#6b7280">${item.quantity || '—'} ${item.unit || ''}</td>
+      <td style="color:#6b7280">${item.location || '—'}</td>
+      <td><span class="status-badge ${status}">${status}</span></td>
+      <td style="color:#6b7280">${posted}</td>
       <td>
-        <button
-          class="btn-table-delete"
-          onclick="adminDeleteListing('${item.id}')">
-          🗑️ Delete
+        <button class="btn-admin-delete" onclick="adminDeleteListing('${item.id}')">
+          🗑 Delete
         </button>
       </td>
     `;
@@ -253,70 +226,46 @@ function renderDonationsTable(data) {
 }
 
 // ============================================
-//  LOAD CLAIMS TABLE
+//  CLAIMS TABLE
 // ============================================
 async function loadClaimsTable() {
   const tbody = document.getElementById('claims-tbody');
   if (!tbody) return;
 
   try {
-    const snapshot = await getDocs(
+    const snap = await getDocs(
       query(collection(db, 'claims'), orderBy('claimedAt', 'desc'))
     );
 
-    allClaimsData = [];
-
-    // Fetch listing details for each claim
-    const promises = snapshot.docs.map(async (docSnap) => {
-      const claim = { id: docSnap.id, ...docSnap.data() };
-
-      // Get food name from listing
+    const promises = snap.docs.map(async d => {
+      const claim = { id: d.id, ...d.data() };
       try {
-        const listingDoc = await getDoc(
-          doc(db, 'foodListings', claim.listingId)
-        );
-        if (listingDoc.exists()) {
-          claim.foodName = listingDoc.data().foodName;
-          claim.location = listingDoc.data().location;
-          claim.donorEmail = listingDoc.data().donorEmail;
+        const listing = await getDoc(doc(db, 'foodListings', claim.listingId));
+        if (listing.exists()) {
+          claim.foodName   = listing.data().foodName;
+          claim.donorName  = listing.data().donorName;
         }
       } catch (e) {}
-
-      // Get recipient email
-      try {
-        const recipientDoc = await getDoc(
-          doc(db, 'users', claim.recipientId)
-        );
-        if (recipientDoc.exists()) {
-          claim.recipientEmail = recipientDoc.data().email;
-        }
-      } catch (e) {}
-
       return claim;
     });
 
     allClaimsData = await Promise.all(promises);
-    renderClaimsTable(allClaimsData);
 
+    const countEl = document.getElementById('claims-count');
+    if (countEl) countEl.textContent = `(${allClaimsData.length})`;
+
+    renderClaimsTable(allClaimsData);
   } catch (e) {
-    tbody.innerHTML = `
-      <tr><td colspan="7" class="table-loading">
-        ⚠️ Error loading claims.
-      </td></tr>`;
-    console.error('Claims table error:', e);
+    tbody.innerHTML = `<tr><td colspan="5" class="admin-loading">⚠️ Error loading claims.</td></tr>`;
   }
 }
 
-// ---- Render Claims Table ----
 function renderClaimsTable(data) {
   const tbody = document.getElementById('claims-tbody');
   if (!tbody) return;
 
   if (data.length === 0) {
-    tbody.innerHTML = `
-      <tr><td colspan="7" class="table-loading">
-        No claims yet.
-      </td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="5"><div class="admin-empty"><p>No claims yet</p></div></td></tr>`;
     return;
   }
 
@@ -324,21 +273,16 @@ function renderClaimsTable(data) {
   data.forEach(claim => {
     const row = document.createElement('tr');
     const claimedAt = claim.claimedAt?.toDate
-      ? formatAdminDate(claim.claimedAt.toDate())
-      : 'Unknown';
+      ? formatDate(claim.claimedAt.toDate()) : '—';
 
     row.innerHTML = `
-      <td><strong>${claim.foodName || 'N/A'}</strong></td>
-      <td>${claim.donorName || 'N/A'}</td>
-      <td>${claim.donorEmail || 'N/A'}</td>
-      <td>${claim.recipientName || 'N/A'}</td>
-      <td>${claim.recipientEmail || 'N/A'}</td>
-      <td>${claimedAt}</td>
+      <td style="font-weight:500;color:#111827">${claim.foodName || '—'}</td>
+      <td style="color:#6b7280">${claim.donorName || '—'}</td>
+      <td style="color:#6b7280">${claim.recipientName || '—'}</td>
+      <td style="color:#6b7280">${claimedAt}</td>
       <td>
-        <button
-          class="btn-table-delete"
-          onclick="adminDeleteClaim('${claim.id}')">
-          🗑️ Delete
+        <button class="btn-admin-delete" onclick="adminDeleteClaim('${claim.id}')">
+          🗑 Delete
         </button>
       </td>
     `;
@@ -347,126 +291,97 @@ function renderClaimsTable(data) {
 }
 
 // ============================================
-//  SWITCH ADMIN TAB
-// ============================================
-window.switchAdminTab = function(tab) {
-  // Hide all tabs
-  document.querySelectorAll('.admin-table-container')
-    .forEach(el => el.classList.add('hidden'));
-  document.querySelectorAll('.admin-tab')
-    .forEach(el => el.classList.remove('active'));
-
-  // Show selected tab
-  document.getElementById(`admin-tab-${tab}`)
-    .classList.remove('hidden');
-  event.target.classList.add('active');
-};
-
-// ============================================
-//  SEARCH ADMIN TABLES
+//  SEARCH
 // ============================================
 window.searchAdminTable = function(table) {
   const search = document.getElementById(`admin-search-${table}`)
     ?.value.toLowerCase().trim();
 
   if (table === 'users') {
-    const filtered = allUsersData.filter(u =>
+    renderUsersTable(allUsersData.filter(u =>
       u.name?.toLowerCase().includes(search) ||
       u.email?.toLowerCase().includes(search) ||
       u.role?.toLowerCase().includes(search)
-    );
-    renderUsersTable(filtered);
+    ));
   }
-
   if (table === 'donations') {
-    const filtered = allDonationsData.filter(d =>
+    renderDonationsTable(allDonationsData.filter(d =>
       d.foodName?.toLowerCase().includes(search) ||
       d.donorName?.toLowerCase().includes(search) ||
-      d.donorEmail?.toLowerCase().includes(search) ||
-      d.location?.toLowerCase().includes(search) ||
-      d.status?.toLowerCase().includes(search)
-    );
-    renderDonationsTable(filtered);
+      d.location?.toLowerCase().includes(search)
+    ));
   }
-
   if (table === 'claims') {
-    const filtered = allClaimsData.filter(c =>
+    renderClaimsTable(allClaimsData.filter(c =>
       c.foodName?.toLowerCase().includes(search) ||
       c.donorName?.toLowerCase().includes(search) ||
-      c.recipientName?.toLowerCase().includes(search) ||
-      c.donorEmail?.toLowerCase().includes(search) ||
-      c.recipientEmail?.toLowerCase().includes(search)
-    );
-    renderClaimsTable(filtered);
+      c.recipientName?.toLowerCase().includes(search)
+    ));
   }
 };
 
 // ============================================
-//  ADMIN DELETE FUNCTIONS
+//  DELETE
 // ============================================
-window.adminDeleteUser = async function(userId) {
-  if (!confirm('Delete this user? This cannot be undone!')) return;
+window.adminDeleteUser = async function(id) {
+  if (!confirm('Delete this user?')) return;
   try {
-    await deleteDoc(doc(db, 'users', userId));
+    await deleteDoc(doc(db, 'users', id));
     await loadUsersTable();
     await loadAdminOverview();
-    alert('✅ User deleted!');
-  } catch (e) {
-    alert('❌ Could not delete user.');
-    console.error(e);
-  }
+  } catch (e) { alert('Could not delete user.'); }
 };
 
-window.adminDeleteListing = async function(listingId) {
-  if (!confirm('Delete this listing? This cannot be undone!')) return;
+window.adminDeleteListing = async function(id) {
+  if (!confirm('Delete this listing?')) return;
   try {
-    await deleteDoc(doc(db, 'foodListings', listingId));
+    await deleteDoc(doc(db, 'foodListings', id));
     await loadDonationsTable();
     await loadAdminOverview();
-    alert('✅ Listing deleted!');
-  } catch (e) {
-    alert('❌ Could not delete listing.');
-    console.error(e);
-  }
+  } catch (e) { alert('Could not delete listing.'); }
 };
 
-window.adminDeleteClaim = async function(claimId) {
-  if (!confirm('Delete this claim? This cannot be undone!')) return;
+window.adminDeleteClaim = async function(id) {
+  if (!confirm('Delete this claim?')) return;
   try {
-    await deleteDoc(doc(db, 'claims', claimId));
+    await deleteDoc(doc(db, 'claims', id));
     await loadClaimsTable();
     await loadAdminOverview();
-    alert('✅ Claim deleted!');
-  } catch (e) {
-    alert('❌ Could not delete claim.');
-    console.error(e);
-  }
+  } catch (e) { alert('Could not delete claim.'); }
 };
 
 // ============================================
 //  HELPERS
 // ============================================
-function formatAdminDate(date) {
+function formatDate(date) {
   return date.toLocaleDateString('en-IN', {
-    day:    '2-digit',
-    month:  'short',
-    year:   'numeric',
-    hour:   '2-digit',
-    minute: '2-digit'
+    day: '2-digit', month: 'short', year: 'numeric'
   });
 }
 
 function animateAdminCounter(id, target) {
   const el = document.getElementById(id);
   if (!el) return;
-  let current  = 0;
-  const step   = Math.ceil(target / 30);
-  const timer  = setInterval(() => {
+  let current = 0;
+  const step  = Math.ceil(target / 30) || 1;
+  const timer = setInterval(() => {
     current += step;
-    if (current >= target) {
-      current = target;
-      clearInterval(timer);
-    }
+    if (current >= target) { current = target; clearInterval(timer); }
     el.textContent = current.toLocaleString();
-  }, 50);
+  }, 40);
 }
+
+function stringToColor(str) {
+  const colors = [
+    '#16a34a','#2563eb','#ea580c',
+    '#7c3aed','#0d9488','#db2777'
+  ];
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+}
+
+// Legacy tab function (kept for compatibility)
+window.switchAdminTab = window.showAdminSection;
