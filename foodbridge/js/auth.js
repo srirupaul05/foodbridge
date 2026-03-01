@@ -147,10 +147,7 @@ window.loginUser = async function() {
     const user = userCredential.user;
 
     // Skip verification check for admin emails
-    const adminEmails = [
-      'paulsrirup2005@gmail.com',
-      'srirupaul14@gmail.com'
-    ];
+    
 
     if (!user.emailVerified && !adminEmails.includes(email)) {
       await signOut(auth);
@@ -202,7 +199,7 @@ window.loginUser = async function() {
     errorEl.textContent = '';
 
    // Redirect based on role
-    const adminEmails = ['paulsrirup2005@gmail.com', 'srirupaul14@gmail.com'];
+  const adminEmails = ['paulsrirup2005@gmail.com', 'srirupaul14@gmail.com'];
     if (adminEmails.includes(email)) {
       showPage('admin');
     } else if (userData?.role === 'donor') {

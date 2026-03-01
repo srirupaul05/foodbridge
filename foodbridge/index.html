@@ -19,7 +19,6 @@
   <link rel="stylesheet" href="css/impact.css"/>
   <link rel="stylesheet" href="css/chat.css"/>
   <link rel="stylesheet" href="css/map.css"/>
-  <link rel="stylesheet" href="css/admin.css"/>
 
   <!-- Leaflet Map CSS — free, no API key -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -423,193 +422,7 @@
     </div>
   </div>
 
-  <!-- ===== ADMIN PAGE ===== -->
-  <div id="page-admin" class="page hidden">
-
-    <div class="admin-layout">
-
-      <!-- Sidebar -->
-      <aside class="admin-sidebar">
-        <div class="admin-sidebar-header">
-          <h2>FoodBridge</h2>
-          <p>Admin Console</p>
-        </div>
-
-        <button class="admin-nav-item active" id="nav-overview" onclick="showAdminSection('overview')">
-          <span class="admin-nav-icon">📊</span> Overview
-        </button>
-        <button class="admin-nav-item" id="nav-users" onclick="showAdminSection('users')">
-          <span class="admin-nav-icon">👥</span> Users
-        </button>
-        <button class="admin-nav-item" id="nav-donations" onclick="showAdminSection('donations')">
-          <span class="admin-nav-icon">🍱</span> Donations
-        </button>
-        <button class="admin-nav-item" id="nav-claims" onclick="showAdminSection('claims')">
-          <span class="admin-nav-icon">🤝</span> Claims
-        </button>
-      </aside>
-
-      <!-- Main Content -->
-      <main class="admin-main">
-
-        <!-- Overview Section -->
-        <div id="admin-section-overview">
-          <div class="admin-page-header">
-            <h1>Good morning, Srirup 👋</h1>
-            <p>Here's what's happening on FoodBridge today.</p>
-          </div>
-
-          <div class="admin-stats-grid">
-            <div class="admin-stat-card">
-              <div class="admin-stat-icon">👥</div>
-              <div class="admin-stat-label">Total Users</div>
-              <div class="admin-stat-value" id="admin-total-users">—</div>
-              <span class="admin-stat-badge green">Active</span>
-            </div>
-            <div class="admin-stat-card">
-              <div class="admin-stat-icon">🍱</div>
-              <div class="admin-stat-label">Donations</div>
-              <div class="admin-stat-value" id="admin-total-donations">—</div>
-              <span class="admin-stat-badge blue">Total</span>
-            </div>
-            <div class="admin-stat-card">
-              <div class="admin-stat-icon">🤝</div>
-              <div class="admin-stat-label">Claims</div>
-              <div class="admin-stat-value" id="admin-total-claims">—</div>
-              <span class="admin-stat-badge orange">Total</span>
-            </div>
-            <div class="admin-stat-card">
-              <div class="admin-stat-icon">♻️</div>
-              <div class="admin-stat-label">KG Rescued</div>
-              <div class="admin-stat-value" id="admin-total-kg">—</div>
-              <span class="admin-stat-badge teal">Food saved</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Users Section -->
-        <div id="admin-section-users" class="hidden">
-          <div class="admin-header-row">
-            <div class="admin-page-header" style="margin:0">
-              <h1>Users</h1>
-              <p>Manage all registered users</p>
-            </div>
-          </div>
-
-          <div class="admin-section">
-            <div class="admin-section-header">
-              <h3>All Users <span id="users-count" style="color:#9b9fa8;font-weight:400"></span></h3>
-              <div class="admin-search-wrap">
-                <span class="admin-search-icon">🔍</span>
-                <input type="text" id="admin-search-users"
-                  placeholder="Search users..."
-                  autocomplete="off"
-                  oninput="searchAdminTable('users')"/>
-              </div>
-            </div>
-            <div class="admin-table-wrap">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Joined</th>
-                    <th>Donations</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="users-tbody">
-                  <tr><td colspan="6" class="admin-loading">⏳ Loading...</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- Donations Section -->
-        <div id="admin-section-donations" class="hidden">
-          <div class="admin-header-row">
-            <div class="admin-page-header" style="margin:0">
-              <h1>Donations</h1>
-              <p>All food listings posted on FoodBridge</p>
-            </div>
-          </div>
-
-          <div class="admin-section">
-            <div class="admin-section-header">
-              <h3>All Donations <span id="donations-count" style="color:#9b9fa8;font-weight:400"></span></h3>
-              <div class="admin-search-wrap">
-                <span class="admin-search-icon">🔍</span>
-                <input type="text" id="admin-search-donations"
-                  placeholder="Search donations..."
-                  autocomplete="off"
-                  oninput="searchAdminTable('donations')"/>
-              </div>
-            </div>
-            <div class="admin-table-wrap">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>Food</th>
-                    <th>Donor</th>
-                    <th>Quantity</th>
-                    <th>Location</th>
-                    <th>Status</th>
-                    <th>Posted</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="donations-tbody">
-                  <tr><td colspan="7" class="admin-loading">⏳ Loading...</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <!-- Claims Section -->
-        <div id="admin-section-claims" class="hidden">
-          <div class="admin-header-row">
-            <div class="admin-page-header" style="margin:0">
-              <h1>Claims</h1>
-              <p>All food claims made by recipients</p>
-            </div>
-          </div>
-
-          <div class="admin-section">
-            <div class="admin-section-header">
-              <h3>All Claims <span id="claims-count" style="color:#9b9fa8;font-weight:400"></span></h3>
-              <div class="admin-search-wrap">
-                <span class="admin-search-icon">🔍</span>
-                <input type="text" id="admin-search-claims"
-                  placeholder="Search claims..."
-                  autocomplete="off"
-                  oninput="searchAdminTable('claims')"/>
-              </div>
-            </div>
-            <div class="admin-table-wrap">
-              <table class="admin-table">
-                <thead>
-                  <tr>
-                    <th>Food</th>
-                    <th>Donor</th>
-                    <th>Recipient</th>
-                    <th>Claimed At</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody id="claims-tbody">
-                  <tr><td colspan="5" class="admin-loading">⏳ Loading...</td></tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-      </main>
-    </div>
-  </div>
+  
   <!-- JS Files — order matters! -->
   <script type="module" src="js/firebase-config.js"></script>
   <script type="module" src="js/auth.js"></script>
@@ -620,7 +433,7 @@
   <script type="module" src="js/impact.js"></script>
   <script type="module" src="js/chat.js"></script>
   <script type="module" src="js/map.js"></script>
-  <script type="module" src="js/admin.js"></script>
+
 
   <!-- Leaflet Map JS — free, no API key -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

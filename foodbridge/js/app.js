@@ -18,7 +18,7 @@ const ADMIN_EMAILS = [
 // ---- All page IDs ----
 const pages = [
   'home', 'auth', 'donor',
-  'recipient', 'tracker', 'impact', 'admin'
+  'recipient', 'tracker', 'impact'
 ];
 
 // ---- Current logged in user (global) ----
@@ -41,11 +41,7 @@ window.currentUserData = null;
   // Show selected page
   const activePage = document.getElementById(`page-${pageName}`);
   if (activePage) {
-    // Extra protection for admin page
-    if (pageName === 'admin') {
-      const isAdmin = ADMIN_EMAILS?.includes(window.currentUser?.email);
-      if (!isAdmin) return;
-    }
+    
     activePage.classList.remove('hidden');
     activePage.classList.add('active');
   }
@@ -73,13 +69,6 @@ window.currentUserData = null;
   }
   if (pageName === 'tracker' && window.currentUser) {
     if (typeof loadTrackerItems === 'function') loadTrackerItems();
-  }
-
-  if (pageName === 'admin') {
-    if (typeof loadAdmin === 'function') {
-      // Wait for auth to be ready
-      setTimeout(() => loadAdmin(), 500);
-    }
   }
 };
 
@@ -127,6 +116,8 @@ onAuthStateChanged(auth, async (user) => {
       if (pageId === 'donor') loadMyDonations();
       if (pageId === 'recipient') loadListings();
       if (pageId === 'impact') { loadImpact(); loadLeaderboard(); }
+      // Don't redirect if already on admin page
+      if (pageId === 'admin') return;
     }
 
     // Show admin nav if admin
