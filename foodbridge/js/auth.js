@@ -201,8 +201,11 @@ window.loginUser = async function() {
 
     errorEl.textContent = '';
 
-    // Redirect based on role
-    if (userData?.role === 'donor') {
+   // Redirect based on role
+    const adminEmails = ['paulsrirup2005@gmail.com', 'srirupaul14@gmail.com'];
+    if (adminEmails.includes(email)) {
+      showPage('admin');
+    } else if (userData?.role === 'donor') {
       showPage('donor');
     } else if (userData?.role === 'recipient') {
       showPage('recipient');
