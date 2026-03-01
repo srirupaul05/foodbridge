@@ -64,17 +64,60 @@
   <!-- ===== HOME PAGE ===== -->
   <div id="page-home" class="page active">
 
-    <!-- Hero Section -->
+    <!-- Hero -->
     <section class="hero">
       <div class="hero-text">
-        <h1>Every Bite <span>Nourishes</span></h1>
-        <p>Connecting surplus food with people who need it most. Reduce waste. Feed communities. Build impact.</p>
+        <div class="hero-eyebrow">🍃 Food Rescue Platform</div>
+        <h1>
+          Rescue Food.<br/>
+          <span class="highlight"><span>Feed People.</span></span><br/>
+          Build Impact.
+        </h1>
+        <p class="hero-desc">
+          Nourishh connects surplus food from restaurants,
+          stores and homes with people who need it most.
+          Every bite is nourishment — nothing goes to waste.
+        </p>
         <div class="hero-btns">
-          <button onclick="showPage('donor')" class="btn-primary">Donate Food</button>
-          <button onclick="showPage('recipient')" class="btn-secondary">Find Food</button>
+          <button onclick="showPage('donor')" class="btn-primary">
+            🍱 Donate Food
+          </button>
+          <button onclick="showPage('recipient')" class="btn-secondary">
+            🙏 Find Food
+          </button>
+        </div>
+        <div class="hero-trust">
+          <div class="trust-item">
+            <div class="trust-dot"></div>
+            Free to use
+          </div>
+          <div class="trust-item">
+            <div class="trust-dot"></div>
+            Real-time listings
+          </div>
+          <div class="trust-item">
+            <div class="trust-dot"></div>
+            Verified donors
+          </div>
         </div>
       </div>
-      <div class="hero-image">🌍</div>
+
+      <div class="hero-visual">
+        <div class="food-wall">
+          <div class="food-tile">🥗</div>
+          <div class="food-tile">🍞</div>
+          <div class="food-tile">🥛</div>
+          <div class="food-tile">🍎</div>
+          <div class="food-tile featured">🍱</div>
+          <div class="food-tile">🥦</div>
+          <div class="food-tile">🍗</div>
+          <div class="food-tile featured">🌍</div>
+          <div class="food-tile">🍚</div>
+          <div class="food-tile">🥕</div>
+          <div class="food-tile">🍳</div>
+          <div class="food-tile">🫘</div>
+        </div>
+      </div>
     </section>
 
     <!-- Stats Bar -->
@@ -83,49 +126,163 @@
         <h2 id="stat-meals">0</h2>
         <p>Meals Provided</p>
       </div>
+      <div class="stat-divider"></div>
       <div class="stat">
         <h2 id="stat-kg">0</h2>
         <p>KG Food Rescued</p>
       </div>
+      <div class="stat-divider"></div>
       <div class="stat">
         <h2 id="stat-co2">0</h2>
         <p>KG CO₂ Avoided</p>
       </div>
+      <div class="stat-divider"></div>
       <div class="stat">
         <h2 id="stat-donors">0</h2>
         <p>Active Donors</p>
       </div>
     </section>
 
-    <!-- How It Works -->
-    <section class="how-it-works">
-      <h2>How nourishh Works</h2>
-      <div class="steps">
-        <div class="step">
-          <div class="step-icon">📦</div>
-          <h3>Donor Posts Food</h3>
-          <p>Restaurants, stores, or individuals post surplus food with pickup details.</p>
+    <!-- Featured Food -->
+    <section class="featured-section">
+      <div class="section-header">
+        <div>
+          <div class="section-label">🔴 Live Now</div>
+          <div class="section-title">Food Available Near You</div>
         </div>
-        <div class="step">
-          <div class="step-icon">🔔</div>
-          <h3>Recipients Get Notified</h3>
-          <p>Nearby food banks and individuals in need see available food instantly.</p>
-        </div>
-        <div class="step">
-          <div class="step-icon">🤝</div>
-          <h3>Food Gets Claimed</h3>
-          <p>Recipients claim food and arrange pickup before it goes to waste.</p>
-        </div>
-        <div class="step">
-          <div class="step-icon">🌍</div>
-          <h3>Impact Is Tracked</h3>
-          <p>Every donation is tracked and converted into real impact numbers.</p>
+        <button class="btn-see-all" onclick="showPage('recipient')">
+          See All Listings →
+        </button>
+      </div>
+      <div class="featured-grid" id="home-featured-listings">
+        <div class="featured-empty">
+          <p>🍱</p>
+          <p>No listings yet — be the first to donate!</p>
         </div>
       </div>
     </section>
 
-  </div>
+    <!-- How It Works -->
+    <section class="how-section">
+      <div class="how-inner">
+        <div style="text-align:center">
+          <div class="section-label" style="display:inline-block">
+            Simple Process
+          </div>
+          <div class="section-title" style="margin-top:8px">
+            How Nourishh Works
+          </div>
+        </div>
 
+        <div class="steps-grid">
+          <div class="step">
+            <div class="step-number">1</div>
+            <span class="step-icon">📦</span>
+            <h3>Donor Posts Food</h3>
+            <p>Restaurants, stores or individuals post surplus food with a live photo and pickup details.</p>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <span class="step-icon">🔍</span>
+            <h3>Recipients Browse</h3>
+            <p>People in need browse available food by category, location or expiry using map or grid view.</p>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <span class="step-icon">💬</span>
+            <h3>Chat & Claim</h3>
+            <p>Recipients claim food and chat directly with donors to arrange a smooth pickup.</p>
+          </div>
+          <div class="step">
+            <div class="step-number">4</div>
+            <span class="step-icon">🌍</span>
+            <h3>Track Your Impact</h3>
+            <p>Every donation is tracked — see your meals provided, CO₂ saved and earn badges.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="testimonials-section">
+      <div style="text-align:center">
+        <div class="section-label" style="display:inline-block">
+          Real Stories
+        </div>
+        <div class="section-title" style="margin-top:8px">
+          What Our Community Says
+        </div>
+      </div>
+
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <p class="testimonial-text">
+            I used to throw away leftover food from my restaurant every night.
+            With Nourishh I can now donate it in minutes — it feels amazing
+            knowing it reaches someone who needs it.
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar"
+              style="background:#f0fdf4">👨‍🍳</div>
+            <div>
+              <div class="testimonial-name">Rahul Sharma</div>
+              <div class="testimonial-role">Restaurant Owner, Kolkata</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <p class="testimonial-text">
+            As a single mother, finding affordable food was always stressful.
+            Nourishh connected me with fresh food donations near my home.
+            This platform is a lifeline for families like mine.
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar"
+              style="background:#fff7ed">👩</div>
+            <div>
+              <div class="testimonial-name">Priya Das</div>
+              <div class="testimonial-role">Recipient, Bhatpara</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <p class="testimonial-text">
+            The expiry tracker helped me realise how much food I was wasting
+            at home. Now I donate before things expire and my impact score
+            keeps growing. Truly a habit-changing app!
+          </p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar"
+              style="background:#eff6ff">🧑‍💻</div>
+            <div>
+              <div class="testimonial-name">Arjun Mehta</div>
+              <div class="testimonial-role">Donor & Volunteer, Mumbai</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Banner -->
+    <section class="cta-banner">
+      <h2>Ready to Make a Difference? 🍃</h2>
+      <p>
+        Join thousands of donors and recipients building
+        a zero-waste food community together.
+      </p>
+      <div class="cta-btns">
+        <button onclick="showPage('donor')" class="btn-cta-primary">
+          🍱 Start Donating
+        </button>
+        <button onclick="showPage('recipient')" class="btn-cta-secondary">
+          🙏 Find Food Near Me
+        </button>
+      </div>
+    </section>
+
+  </div>
   <!-- ===== AUTH PAGE ===== -->
   <div id="page-auth" class="page">
     <div class="auth-container">

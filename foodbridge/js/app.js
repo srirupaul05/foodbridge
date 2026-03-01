@@ -152,6 +152,90 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 // ============================================
+//  HOME FEATURED LISTINGS
+// ============================================
+async function loadHomeFeatured() {
+  const grid = document.getElementById('home-featured-listings');
+  if (!grid) return;
+
+  try {
+    const { collection, getDocs, query,
+            where, orderBy, limit } = await import(
+      "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"
+    );
+
+    const snap = await getDocs(
+      query(
+        collection(db, 'foodListings'),
+        where('status', '==', 'available'),
+        orderBy('createdAt', 'desc'),
+        limit(3)
+      )
+    );
+
+    if (snap.empty) {
+      grid.innerHTML = `
+        <div class="featured-empty">
+          <p>🍱</p>
+          <p>No listings yet — be the first to donate!</p>
+        </div>`;
+      return;
+    }
+
+    const categoryEmojis = {
+      veg: '🥦', nonveg: '🍗', bakery: '🍞',
+      dairy: '🥛', fruits: '🍎', cooked: '🍲',
+      packaged: '📦'
+    };
+
+    grid.innerHTML = '';
+    snap.forEach(d => {
+      const item = d.data();
+      const emoji = categoryEmojis[item.category] || '🍱';
+
+      // Days left
+      const now = new Date();
+      const expiry = item.expiryDate?.toDate
+        ? item.expiryDate.toDate() : null;
+      const daysLeft = expiry
+        ? Math.ceil((expiry - now) / (1000 * 60 * 60 * 24))
+        : null;
+      const expiryText = daysLeft === null ? ''
+        : daysLeft <= 0 ? '⚠️ Expires today!'
+        : daysLeft === 1 ? '🔴 1 day left'
+        : `🟡 ${daysLeft} days left`;
+
+      const card = document.createElement('div');
+      card.className = 'featured-card';
+      card.onclick = () => showPage('recipient');
+      card.innerHTML = `
+        <div class="featured-card-header">${emoji}</div>
+        <div class="featured-card-body">
+          <div class="featured-card-title">
+            ${item.foodName || 'Food Item'}
+          </div>
+          <div class="featured-card-meta">
+            <span>📍 ${item.location || 'Location N/A'}</span>
+            <span>•</span>
+            <span>${item.quantity || '?'} ${item.unit || ''}</span>
+          </div>
+          <span class="featured-card-tag">
+            ${item.category || 'food'}
+          </span>
+          ${expiryText ? `
+          <div class="featured-card-expiry">${expiryText}</div>
+          ` : ''}
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+
+  } catch (e) {
+    console.error('Featured listings error:', e);
+  }
+}
+
+// ============================================
 //  HOME STATS — animated counters
 // ============================================
 async function loadHomeStats() {
@@ -199,7 +283,6 @@ window.animateCounter = function(elementId, target) {
 //  START — show home page on load
 // ============================================
 window.addEventListener('DOMContentLoaded', () => {
-  // Hide ALL pages first including admin
   pages.forEach(p => {
     const el = document.getElementById(`page-${p}`);
     if (el) {
@@ -208,7 +291,8 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
   showPage('home');
-  console.log('🍃 nourishh loaded!');
+  loadHomeFeatured();
+  console.log('🍃 Nourishh loaded!');
 });
 
 // ============================================
