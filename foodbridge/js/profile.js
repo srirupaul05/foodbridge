@@ -197,14 +197,14 @@ window.deleteAccount = async function() {
     // Delete Firebase Auth user
     await deleteUser(auth.currentUser);
 
-    alert('✅ Account deleted. Sorry to see you go!');
+    showToast('Account deleted. Sorry to see you go!', 'info');
     showPage('home');
 
   } catch (e) {
     if (e.code === 'auth/requires-recent-login') {
-      alert('⚠️ Please logout and login again before deleting your account.');
+      showToast('Please logout and login again first!', 'warning');
     } else {
-      alert('❌ Could not delete account. Try again.');
+      showToast('Could not delete account. Try again.', 'error');
     }
     console.error(e);
   }

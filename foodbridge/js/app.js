@@ -15,6 +15,37 @@ const ADMIN_EMAILS = [
   'srirupaul14@gmail.com'
 ];
 
+// ============================================
+//  TOAST NOTIFICATIONS
+// ============================================
+window.showToast = function(message, type = 'success', duration = 3500) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const icons = {
+    success: '✅',
+    error:   '❌',
+    warning: '⚠️',
+    info:    'ℹ️'
+  };
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `
+    <span class="toast-icon">${icons[type] || '✅'}</span>
+    <span class="toast-msg">${message}</span>
+    <button class="toast-close" onclick="this.parentElement.remove()">✕</button>
+  `;
+
+  container.appendChild(toast);
+
+  // Auto remove
+  setTimeout(() => {
+    toast.style.animation = 'toastOut 0.3s cubic-bezier(0.4,0,0.2,1) forwards';
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+};
+
 // ---- All page IDs ----
 const pages = [
   'home', 'auth', 'donor',

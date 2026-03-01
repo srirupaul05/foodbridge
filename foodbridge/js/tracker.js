@@ -261,7 +261,7 @@ window.deleteTrackerItem = async function(itemId) {
     );
     await loadTrackerItems();
   } catch (e) {
-    alert('Could not remove item.');
+    showToast('Could not remove item.', 'error');
     console.error(e);
   }
 };

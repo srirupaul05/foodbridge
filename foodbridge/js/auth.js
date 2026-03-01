@@ -257,8 +257,8 @@ window.resendVerification = async function(email, password) {
     );
     await sendEmailVerification(userCredential.user);
     await signOut(auth);
-    alert('✅ Verification email sent! Please check your inbox.');
+    showToast('Verification email sent! Check your inbox.', 'success');
   } catch (e) {
-    alert('❌ Could not resend email. Please try again.');
+    showToast('Could not send email. Try again in a few minutes.', 'error');
   }
 };
