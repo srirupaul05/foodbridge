@@ -786,3 +786,28 @@
   font-style: normal;
   letter-spacing: -0.02em;
 }
+
+/* ---- Centered Hero ---- */
+.hero.hero-centered {
+  grid-template-columns: 1fr;
+  text-align: center;
+  max-width: 800px;
+  min-height: auto;
+  padding: 100px 40px;
+}
+
+.hero.hero-centered .hero-desc {
+  margin: 0 auto 36px;
+}
+
+.hero.hero-centered .hero-btns {
+  justify-content: center;
+}
+
+.hero.hero-centered .hero-trust {
+  justify-content: center;
+}
+
+.hero.hero-centered .hero-text h1 {
+  font-size: 4.5rem;
+}
